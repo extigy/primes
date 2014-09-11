@@ -6,11 +6,6 @@ function InputManager(callback) {
 InputManager.prototype.listen = function () {
   var s = this;
   // Respond to mouse
-  document.addEventListener("mousemove", function (event) {
-    var mousePos = {'x': event.pageX, 'y': event.pageY};
-    s.eventfunc(mousePos,"mousemove");
-    event.preventDefault();
-  });
   document.addEventListener("mousedown", function (event) {
     var mousePos = {'x': event.pageX, 'y': event.pageY};
     s.eventfunc(mousePos,"touchstart");

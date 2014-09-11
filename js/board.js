@@ -5,18 +5,23 @@ function tanh(x) {
 function Box(px,py,bwidth) {
   this.x                = px;
   this.y                = py;
-  this.type             = "test";
+  this.type             = "empty";
   this.scale            = 1;
   this.width            = bwidth;
-  this.number           = Math.round(Math.random()*500);
-  this.color            = window.cManager.HSV2RGB(window.cManager.numberHue(this.number),1-tanh(this.number/200),1.0-0.7*tanh(this.number/200));
+  this.number           = 0;
+  this.color            = 0;
+  //this.number           = numbers.fivesmooth[Math.floor(Math.random()*86)];
+  //this.number           = numbers.elevensmooth[Math.floor(Math.random()*192)];
+  //this.color            = window.cManager.HSV2RGB(window.cManager.numberHue(this.number),
+  //                          0.95-0.7*tanh((factor(this.number).length-1)/2),
+  //                          0.95-0.5*tanh((factor(this.number).length-1)/2));
 }
 
 
 function Board(sizex) {
   this.sizex = sizex;
   this.sizey = sizex;
-  this.boxwidth = (divCoords.width)/sizex;
+  this.boxwidth = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/sizex;
   this.boxes = this.makeBoxes();
 }
 
@@ -30,6 +35,18 @@ Board.prototype.makeBoxes = function () {
   }
   return boxes;
 };
+
+Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
+  for (var i=sx;i<sx+wx;i++){
+    for(var j=sy;j<sy+wy;j++){
+      this.boxes[i][j].type = "number";
+      this.boxes[i][j].number = psmooth[Math.floor(Math.random()*192)];
+      this.boxes[i][j].color = window.cManager.HSV2RGB(window.cManager.numberHue(this.boxes[i][j].number),
+                            0.95-0.7*tanh((factor(this.boxes[i][j].number).length-1)/2),
+                            0.95-0.5*tanh((factor(this.boxes[i][j].number).length-1)/2));
+    }
+  }
+}
 
 Board.prototype.isInside = function (loc) {
   return loc.x >= 0 && loc.x < this.sizex && loc.y >= 0 && loc.y < this.sizey;

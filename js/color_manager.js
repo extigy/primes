@@ -44,9 +44,13 @@ ColorManager.prototype.nextHue = function (){
 }
 
 ColorManager.prototype.numberHue = function (x){
-  //TODO: MAKE ARRAY OF Nth PRIME NUMBER
-  //i.e npm = {0,1,2,0,3,0,4,0,0,0,5}
-  cc = x*grc;
-  cc %= 1;
-  return cc
+  var cc = (numbers.npn[factor(x)[0]])*grc;
+  var mhue = cc%1;
+  
+  for (var i=1;i<factor(x).length;i++){
+    cc = (numbers.npn[factor(x)[i]])*grc;
+    cc %= 1;
+    mhue = (mhue+cc)/2;
+  }
+  return mhue;
 }

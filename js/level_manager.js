@@ -1,7 +1,8 @@
 function GameManager(size) {
   this.inputManager   = new InputManager(this.handleEvent.bind(this));
   this.adManager      = new AdManager();
-  this.board      = new Board(5);
+  this.boardsize = 5;
+  this.board      = new Board(this.boardsize);
   this.gameover;
   this.inGame;
   this.showCredits;
@@ -25,12 +26,15 @@ GameManager.prototype.mainMenu = function (modeID) {
 GameManager.prototype.restart = function () {
     this.gameover = 0;
     this.playpop = 0;
+    this.board = new Board(this.boardsize);
     this.makeLevel();
 };
 
 GameManager.prototype.makeLevel = function () {
     this.playpop = 0;
     //Code for making initial set of primes to go here
+    this.board.makeBoxes();
+    this.board.makeRandomNumbers(numbers.elevensmooth,1,2,3,3);
     this.drawAll();
     this.startTimer();
 };
@@ -49,13 +53,22 @@ GameManager.prototype.update = function () {
   this.drawAll();
 };
 
+GameManager.prototype.handleTouch = function (mousePos) {
+  var bx = Math.floor((mousePos.x - divCoords.bl)/this.board.boxwidth);
+  var by = Math.floor((mousePos.y - divCoords.br)/this.board.boxwidth)
+  if(bx >= 0 && bx < this.boardsize){
+    console.log(bx+":"+by)
+  }
+
+}
+
 GameManager.prototype.handleEvent = function (mousePos,event) {
   //todo: FIX MOUSE LOCATIONS
 
   //touch inside gamearea
   if(this.gameover == 0 && this.inGame == 1 && mousePos.x > (divCoords.left) && mousePos.x < (divCoords.left+divCoords.width) && mousePos.y > divCoords.top && mousePos.y < (divCoords.top+divCoords.height)){
     mousePos = {x:mousePos.x - divCoords.left,y:mousePos.y-divCoords.top};
-    //this.curMode.handleTouch(mousePos);
+    this.handleTouch(mousePos);
   }
   //gameover Screen
   else if(this.gameover==1 && event == "touchstart") {
@@ -72,12 +85,12 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
 
   //main menu choices
   else if(this.inGame==0 && event == "touchstart") {
-    if(mousePos.x > 0 && mousePos.x < divCoords.left+divCoords.width && mousePos.y > (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 240 - 40) && mousePos.y < (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 240 + 20)){
+    if(mousePos.x > divCoords.left && mousePos.x < divCoords.left+divCoords.width && mousePos.y > divCoords.top+0.23*divCoords.height && mousePos.y < divCoords.top+0.3*divCoords.height){
       this.inGame = 1;
       //if(this.curMode.mode != 2) this.chooseMode(2,4);
       this.restart();
     }
-    if(mousePos.x > 0 && mousePos.x < divCoords.left+divCoords.width && mousePos.y > (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 350 - 40) && mousePos.y < (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 350 + 20)){
+    if(mousePos.x > divCoords.left && mousePos.x < divCoords.left+divCoords.width && mousePos.y > divCoords.top+0.37*divCoords.height && mousePos.y < divCoords.top+0.45*divCoords.height){
       this.inGame = 1;
       //if(this.curMode.mode != 0) this.chooseMode(0,4);
       this.restart();
@@ -95,7 +108,7 @@ GameManager.prototype.startTimer = function () {
     if(window.lManager){
       window.lManager.update();
     }
-  }, 100);
+  }, 30);
 };
 
 GameManager.prototype.stopTimer = function () {
@@ -104,5 +117,5 @@ GameManager.prototype.stopTimer = function () {
   if(window.lManager){
     window.lManager.update();
   }
-}, 100);
+}, 30);
 };
