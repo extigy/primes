@@ -1,3 +1,7 @@
+function AdManager() {
+  AdManager.prototype.makeAd = function(force) {}
+};
+
 var globalAdEnable = false;
 var canvasDraw = new CanvasDrawer();
 window.lManager = null;
@@ -27,7 +31,7 @@ var app = {
                setTimeout(function() {if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide(); }, 100);
                window.clearInterval(preload);
              }
-  		  }, 1000);
+  		  }, 10);
       },
     // deviceready Event Handler
     //

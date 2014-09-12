@@ -22,18 +22,15 @@ InputManager.prototype.listen = function () {
     var mousePos = {'x': touchStartClientX, 'y': touchStartClientY};
 
     s.eventfunc(mousePos,"touchstart");
-    event.preventDefault();
+    if(mousePos.y < 0.05*window.innerHeight){
+      event.preventDefault();
+    }
   });
 
   document.addEventListener("touchmove", function (event) {
     if (event.touches.length > 1 || event.targetTouches > 1) {
       return;
     }
-    touchStartClientX = event.touches[0].pageX;
-    touchStartClientY = event.touches[0].pageY;
-    var mousePos = {'x': touchStartClientX, 'y': touchStartClientY};
-
-    s.eventfunc(mousePos,"touchmove");
     event.preventDefault();
   });
 

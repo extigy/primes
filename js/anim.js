@@ -33,7 +33,7 @@ AnimationManager.prototype.addBoxPop = function(box) {
 AnimationManager.prototype.animBoxPop = function(animData) {
   if(animData.popSizes.length>0){
     sizemult = animData.popSizes.pop();
-    animData.boxInfo.scale = sizemult;
+    animData.boxInfo.scale = 2-sizemult;
     this.canvasMan.drawBox(animData.boxInfo);
     return (0);
   } else {

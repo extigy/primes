@@ -43,12 +43,12 @@ ColorManager.prototype.nextHue = function (){
   return this.cc
 }
 
-ColorManager.prototype.numberHue = function (x){
-  var cc = (numbers.npn[factor(x)[0]])*grc;
+ColorManager.prototype.numberHue = function (x,fcs){
+  var cc = (numbers.npn[fcs[0]])*grc;
   var mhue = cc%1;
   
-  for (var i=1;i<factor(x).length;i++){
-    cc = (numbers.npn[factor(x)[i]])*grc;
+  for (var i=1;i<fcs.length;i++){
+    cc = (numbers.npn[fcs[i]])*grc;
     cc %= 1;
     mhue = (mhue+cc)/2;
   }

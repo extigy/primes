@@ -2,6 +2,7 @@
 var loaded = [];
 var divCoords = {left:0,top:0,width:0,height:0,bl:0,br:0}
 
+
 function CanvasDrawer() {
   this.canvas = document.getElementById('game-canvas');
   this.prepareCanvas();
@@ -17,15 +18,8 @@ function CanvasDrawer() {
 CanvasDrawer.prototype.prepareCanvas = function() {
   this.canvas.style.width ='100%';
   this.canvas.style.height='100%';
-  if(this.canvas.offsetWidth<this.canvas.offsetHeight){
-    this.canvas.width  = this.canvas.offsetWidth;
-    this.canvas.style.height=this.canvas.offsetWidth+"px";
-    this.canvas.height = this.canvas.offsetHeight;
-  } else {
-    this.canvas.width  = this.canvas.offsetHeight;
-    this.canvas.style.width=this.canvas.offsetHeight+"px";
-    this.canvas.height = this.canvas.offsetWidth;
-  }
+  this.canvas.width  = this.canvas.offsetWidth;
+  this.canvas.height = this.canvas.offsetHeight;
   document.getElementById('canvas-container').style.left=Math.round(window.innerWidth-this.canvas.width)/2 + "px";
   divCoords={left:Math.round(window.innerWidth-this.canvas.width)/2,
              top:document.getElementById('canvas-container').offsetTop,
@@ -94,16 +88,25 @@ CanvasDrawer.prototype.drawButtons = function (){
   }
 
 
-CanvasDrawer.prototype.drawGO = function (maze){
+CanvasDrawer.prototype.drawGO = function (board){
+  this.ctx.globalAlpha = 0.5;
   this.ctx.fillStyle = "#333333";
-  this.ctx.roundRect(0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
+  this.roundRect(0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
   this.ctx.globalAlpha = 0.9;
   this.roundRect(0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
   this.ctx.globalAlpha = 1.0;
   this.ctx.fillStyle = "white";
-  this.ctx.font = 50*this.scaled+"px DaysOne";
+  this.ctx.font = divCoords.width/11+"px DaysOne";
   this.ctx.textAlign = "center";
-  this.ctx.fillText("Out of Time", 0.5*divCoords.width, 0.3*divCoords.height);
+  this.ctx.fillText("Game Over", 0.5*divCoords.width, 0.3*divCoords.height);
+  this.ctx.font = divCoords.width/18+"px DaysOne";
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(3,[3]),0.3,0.95);
+  this.ctx.fillText("Score: "+ board.totalScore(), 0.5*divCoords.width, 0.5*divCoords.height);
+  this.ctx.font = divCoords.width/16+"px DaysOne";
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(2,[2]),0.3,0.95);
+  this.ctx.fillText("Play Again", 0.5*divCoords.width, 0.7*divCoords.height);
+   this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(5,[5]),0.3,0.95);
+  this.ctx.fillText("Change Difficulty", 0.5*divCoords.width, 0.8*divCoords.height);
   this.ctx.textAlign = "left";
 };
 
@@ -117,13 +120,13 @@ CanvasDrawer.prototype.drawMainMenu = function () {
   this.ctx.fillStyle = "#FFFFFF";
   this.ctx.textAlign = "center";
   this.ctx.font = divCoords.width/11+"px DaysOne";
-  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(3),0.3,0.95);
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(3,[3]),0.3,0.95);
   this.ctx.fillText("EASY", 0.5*divCoords.width, 0.3*divCoords.height);
-  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(2),0.3,0.95);
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(2,[2]),0.3,0.95);
   this.ctx.fillText("MEDIUM", 0.5*divCoords.width, 0.45*divCoords.height);
-  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(5),0.3,0.95);
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(5,[5]),0.3,0.95);
   this.ctx.fillText("HARD", 0.5*divCoords.width, 0.6*divCoords.height);
-  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(7),0.3,0.95);
+  this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(7,[7]),0.3,0.95);
   this.ctx.fillText("CREDITS", 0.5*divCoords.width, 0.8*divCoords.height);
 
   this.ctx.textAlign = "left";
@@ -159,10 +162,10 @@ CanvasDrawer.prototype.drawCredits = function () {
 
 CanvasDrawer.prototype.drawBox = function (box,deadDraw) {
    borderSc = 3*box.width/100;
-   bx = (box.x*box.width)+borderSc + divCoords.bl
-   by = box.y*box.width+borderSc + divCoords.bl
-   bw = box.width-borderSc*2
-   bh = box.width-borderSc*2
+   bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
+   by = box.y*box.width+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
+   bw = box.scale*box.width-borderSc*2
+   bh = box.scale*box.width-borderSc*2
 
    switch(box.type){
       case "empty":

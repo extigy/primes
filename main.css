@@ -1,6 +1,8 @@
 body, html {
   height:100%;
   margin: 0;
+  position: fixed;
+  width: 100%;
   padding: 0;
   background-color: #EEF3E7;
 }
@@ -13,18 +15,62 @@ body {
 }
 
 #canvas-container {
-	width:75%;
-	height:75%;
+	width:75vw;
+	height:75vh;
+  max-height: 75vw;
+  max-width: 75vh;
 	position:absolute;
-	top: 20%;
+	top: 19%;
 }
 
 #title-container {
-  width:90%;
-  height:20%;
-  position:absolute;
-  top: 0;
-  left:5%;
-  font-family: "DaysOne", Verdana, sans-serif;
-  font-size: 3vh;
+   margin: 0;
+   position: absolute;
+   top: 0%;
+   left: 50%;
+   margin-right: -50%;
+   padding-left: 5%;
+   padding-right: 5%;
+   transform: translate(-50%, 0%);
+   -webkit-transform: translate(-50%, 0%);
+   font-family: "DaysOne", Verdana, sans-serif;
+   font-size: 3vmin;
+}
+#title-container h1{
+  line-height: 50%;
+}
+
+#footer-container {
+   margin: 0;
+   position: absolute;
+   bottom: 0%;
+   line-height: 50%;
+   left: 50%;
+   margin-right: -50%;
+   padding-left: 5%;
+   padding-right: 5%;
+   transform: translate(-50%, 0%);
+   -webkit-transform: translate(-50%, 0%);
+   font-family: "DaysOne", Verdana, sans-serif;
+   font-size: 2vmin;
+}
+
+a:link {
+    text-decoration: none;
+    color: #ed490a;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #ed490a;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #ed490a;
+}
+
+a:active {
+    text-decoration: none;
+    color: #ed490a;
 }

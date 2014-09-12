@@ -10,7 +10,7 @@ AdManager.prototype.makeAd = function(force) {
     this.requestAdMob();
   }
 };
-
+/*
 AdManager.prototype.initAdMob = function() {
   window.plugins.AdMob.createBannerView(
     {'publisherId': '',
@@ -39,3 +39,4 @@ AdManager.prototype.requestAdMob = function() {
      );
    }
 };
+*/
