@@ -2,6 +2,11 @@
 var loaded = [];
 var divCoords = {left:0,top:0,width:0,height:0,bl:0,br:0}
 
+window.addEventListener('resize', function(event){
+  window.canvasDraw.prepareCanvas();
+  window.canvasDraw.setUpUIAR();
+  window.lManager.board.redoBoxSize();
+});
 
 function CanvasDrawer() {
   this.canvas = document.getElementById('game-canvas');

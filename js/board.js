@@ -33,6 +33,14 @@ function Board(sizex) {
   this.boxes = this.makeBoxes();
 }
 
+Board.prototype.redoBoxSize = function () {
+  for (x = 0; x < this.sizex; x++) {
+    for (y = 0; y < this.sizey; y++) {
+      this.boxes[x][y].width = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/this.sizex;
+    }
+  }
+};
+
 Board.prototype.makeBoxes = function () {
   var boxes = [];
   for (x = 0; x < this.sizex; x++) {
