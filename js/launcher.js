@@ -1,13 +1,7 @@
+var globalAdEnable = false;
 function AdManager() {
   AdManager.prototype.makeAd = function(force) {}
 };
-
-var globalAdEnable = false;
-var canvasDraw = new CanvasDrawer();
-window.lManager = null;
-window.sManager = null;
-window.cManager = null;
-var preload;
 
 var app = {
     // Application Constructor
@@ -19,30 +13,27 @@ var app = {
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-
-        preload = setInterval(function () {
-			       console.log('Are Images Loaded?');
-			       if(loaded.indexOf(0) == -1){
-               console.log('Images Loaded');
-               window.cManager = new ColorManager();
-               window.sManager = new SoundManager();
-				       window.lManager = new GameManager(4);
-               setTimeout(function() {if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide(); }, 100);
-               window.clearInterval(preload);
-             }
-  		  }, 10);
+        window.addEventListener('deviceready', this.onDeviceReady, false);
+        window.addEventListener('load', function(event){
+          window.canvasDraw = new CanvasDrawer();
+          window.cManager = new ColorManager();
+          window.sManager = new SoundManager();
+          window.lManager = new GameManager(4);
+          (function animloop(){requestAnimFrame(animloop);window.lManager.update();})();
+          //if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide();
+        },false);
+        window.addEventListener('resize', function(event){
+            window.canvasDraw.prepareCanvas(window.canvasDraw.canvas);
+            window.canvasDraw.prepareCanvas(window.canvasDraw.bgcanvas);
+            setTimeout(function(event){ //Almost working - IOS Fix
+              window.canvasDraw.setUpUIAR();
+              window.lManager.board.redoBoxSize();
+              window.canvasDraw.drawBGinit(window.lManager.board);
+            },200);
+        });
       },
     // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-		  console.log("we are an app");
+        console.log("we are an app");
     }
 };

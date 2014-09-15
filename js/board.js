@@ -1,7 +1,3 @@
-function tanh(x) {
-  return (Math.exp(x) - Math.exp(-x))/(Math.exp(x)+Math.exp(-x));
-}
-
 function Box(px,py,bwidth) {
   this.x                = px;
   this.y                = py;
@@ -11,11 +7,7 @@ function Box(px,py,bwidth) {
   this.number           = 1;
   this.color            = 0;
   this.delMark          = 0;
-  //this.number           = numbers.fivesmooth[Math.floor(Math.random()*86)];
-  //this.number           = numbers.elevensmooth[Math.floor(Math.random()*192)];
-  //this.color            = window.cManager.HSV2RGB(window.cManager.numberHue(this.number),
-  //                          0.95-0.7*tanh((factor(this.number).length-1)/2),
-  //                          0.95-0.5*tanh((factor(this.number).length-1)/2));
+  this.fontsize         = 0;
 }
 
 Box.prototype.doColor = function() {
@@ -23,20 +15,22 @@ Box.prototype.doColor = function() {
   this.color = window.cManager.HSV2RGB(window.cManager.numberHue(this.number,fcs),
                             0.95-0.7*tanh((fcs.length-1)/2),
                             0.95-0.5*tanh((fcs.length-1)/2));
+  this.fontsize = 0;
 }
 
 
 function Board(sizex) {
   this.sizex = sizex;
   this.sizey = sizex;
-  this.boxwidth = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/sizex;
+  this.boxwidth = (window.canvasDraw.canvas.width - window.canvasDraw.canvas.width/22)/sizex;
   this.boxes = this.makeBoxes();
 }
 
 Board.prototype.redoBoxSize = function () {
+  this.boxwidth = (window.canvasDraw.canvas.width - window.canvasDraw.canvas.width/22)/this.sizex;
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizey; y++) {
-      this.boxes[x][y].width = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/this.sizex;
+      this.boxes[x][y].width = this.boxwidth;
     }
   }
 };
@@ -65,14 +59,6 @@ Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
 
 Board.prototype.isInside = function (loc) {
   return loc.x >= 0 && loc.x < this.sizex && loc.y >= 0 && loc.y < this.sizey;
-};
-
-Board.prototype.addBox = function (box) {
-  this.boxes[box.x][box.y] = box;
-};
-
-Board.prototype.removeBox = function (box) {
-  this.boxes[box.x][box.y] = new Box({'x':box.x,'y':box.y},this.boxwidth);
 };
 
 Board.prototype.getNeighbors = function (box) {
@@ -245,7 +231,6 @@ Board.prototype.totalScore= function () {
         if(this.boxes[x][y].number>0 && this.boxes[x][y].type=="number") score *= this.boxes[x][y].number;
     }
   }
-  if(score == 1) return 0;
-  if(score > 1000000) return score.toExponential(5);
+  return (Math.ceil(Math.log(score) / Math.LN10))
   return score;
 }

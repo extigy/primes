@@ -21,12 +21,14 @@ GameManager.prototype.mainMenu = function (modeID) {
   this.inGame = 0;
   this.playpop = 0;
   this.showCredits = 0;
+  window.canvasDraw.drawBGinit(this.board);
 }
 
 GameManager.prototype.restart = function () {
     this.gameover = 0;
     this.playpop = 0;
     this.board = new Board(this.boardsize);
+    window.canvasDraw.drawBGinit(this.board);
     this.makeLevel();
 };
 
@@ -54,8 +56,8 @@ GameManager.prototype.update = function () {
 
 GameManager.prototype.handleTouch = function (mousePos) {
   var bx = Math.floor((mousePos.x - divCoords.bl)/this.board.boxwidth);
-  var by = Math.floor((mousePos.y - divCoords.br)/this.board.boxwidth)
-  if(bx >= 0 && bx < this.boardsize){
+  var by = Math.floor((mousePos.y - divCoords.br)/this.board.boxwidth);
+  if(bx >= 0 && bx < this.boardsize && by >= 0 && by < this.boardsize){
     bn = this.board.boxes[bx][by].number;
     bfs= factor(bn);
     if(bfs.length>1){
@@ -181,9 +183,4 @@ window.requestAnimFrame = (function(){
           function( callback ){
             window.setTimeout(callback, 1000 / 60);
           };
-})();
-
-(function animloop(){
-  requestAnimFrame(animloop);
-  window.lManager.update();
 })();

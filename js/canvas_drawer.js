@@ -1,104 +1,69 @@
-//some cheekly little globals
-var loaded = [];
 var divCoords = {left:0,top:0,width:0,height:0,bl:0,br:0}
 
-window.addEventListener('resize', function(event){
-  window.canvasDraw.prepareCanvas();
-  window.canvasDraw.setUpUIAR();
-  window.lManager.board.redoBoxSize();
-});
-
 function CanvasDrawer() {
-  this.canvas = document.getElementById('game-canvas');
-  this.prepareCanvas();
+  this.canvas = document.getElementById('fg-canvas');
+  this.bgcanvas = document.createElement('canvas');
+  this.prepareCanvas(this.canvas);
+  this.prepareCanvas(this.bgcanvas);
   this.animManager = new AnimationManager(this);
-  this.scaled = 1;
-  this.lineheight = 0;
   this.ctx = this.canvas.getContext('2d');
+  this.bgctx = this.bgcanvas.getContext('2d');
   this.setUpUIAR();
-  this.loadedImages = new Array();
-  this.loadImages();
 }
 
-CanvasDrawer.prototype.prepareCanvas = function() {
-  this.canvas.style.width ='100%';
-  this.canvas.style.height='100%';
-  this.canvas.width  = this.canvas.offsetWidth;
-  this.canvas.height = this.canvas.offsetHeight;
+CanvasDrawer.prototype.prepareCanvas = function(dcanvas) {
+  dcanvas.style.width ='100%';
+  dcanvas.style.height='100%';
+  dcanvas.width  = this.canvas.offsetWidth;
+  dcanvas.height = this.canvas.offsetHeight;
   document.getElementById('canvas-container').style.left=Math.round(window.innerWidth-this.canvas.width)/2 + "px";
-  divCoords={left:Math.round(window.innerWidth-this.canvas.width)/2,
-             top:document.getElementById('canvas-container').offsetTop,
-             width:this.canvas.width,height:this.canvas.height,
-             bl: this.canvas.width/44,
-             br: this.canvas.height/44}
 }
 
 
 CanvasDrawer.prototype.setUpUIAR = function() {
-  this.UISpec = {};
-  this.UISpec.buttonShift = 0.0;
-  this.UISpec.FS = 28 +"pt";
-  this.ctx.font =  this.UISpec.FS+" DaysOne";
-  this.lineheight =  this.ctx.measureText('E').width+1;
-  this.UISpec.elemSep = 0;
+  divCoords={left:Math.round(window.innerWidth-this.canvas.width)/2,
+           top:document.getElementById('canvas-container').offsetTop,
+           width:this.canvas.width,height:this.canvas.height,
+           bl: this.canvas.width/44,
+           br: this.canvas.height/44}
 }
 
 
-CanvasDrawer.prototype.loadImages = function() {
-    /*this.loadedImages.push(new Image());
-    this.loadedImages[0].src = 'assets/bg.jpg';
-    this.loadedImages[0].onload = function(){loaded[0] = 1;};
-    */
-};
-CanvasDrawer.prototype.drawUI = function () {
-    this.drawTimer();
-};
-CanvasDrawer.prototype.drawTimer = function () {
-  //TODO
-  /*
-  this.ctx.fillStyle = "black";
-  this.ctx.fillText(timeremain.toFixed(1), this.UISpec.UIleft+this.UISpec.UIwidth/2.0, divCoords.top-this.lineheight-this.UISpec.elemSep*2);
-  this.ctx.fillStyle = "white";
-  */
+CanvasDrawer.prototype.drawBGinit = function (board) {
+  this.bgctx.fillStyle = "#EEF3E7";
+  this.roundRect(this.bgctx,0, 0, divCoords.width,divCoords.height,0,true,false);
+  this.bgctx.fillStyle = "#444466";
+  this.roundRect(this.bgctx,0, 0, divCoords.width,divCoords.height,divCoords.width/20,true,false);
 
-};
-
-CanvasDrawer.prototype.draw = function (board) {
-
-  //draw bg
-  this.ctx.fillStyle = "#EEF3E7";
-  this.roundRect(0, 0, divCoords.width,divCoords.height,0,true,false);
-  this.ctx.fillStyle = "#444466";
-  this.roundRect(0, 0, divCoords.width,divCoords.height,divCoords.width/20,true,false);
-  //draw all boxes
   for (i = 0;i<board.sizex;i++) {
     for (j = 0;j<board.sizey;j++) {
-      this.drawBox(board.boxes[i][j],0);
+      this.drawBGBox(this.bgctx,board.boxes[i][j]);
+    }
+  }
+}
+
+CanvasDrawer.prototype.draw = function (board) {
+  this.ctx.drawImage(this.bgcanvas,0, 0);
+
+  for (i = 0;i<board.sizex;i++) {
+    for (j = 0;j<board.sizey;j++) {
+      if(board.boxes[i][j].type == "number")this.drawBox(this.ctx,board.boxes[i][j]);
     }
   }
 
-  //draw UI
-  this.drawUI();
-
   //Do queued Animations
   this.animManager.doAnimFrames();
-
-  this.drawButtons();
   //draw MENU if not in game
   if(window.lManager)if(window.lManager.inGame == 0 && window.lManager.showCredits == 0) this.drawMainMenu();
 };
-
-CanvasDrawer.prototype.drawButtons = function (){
-    //TODO
-  }
 
 
 CanvasDrawer.prototype.drawGO = function (board){
   this.ctx.globalAlpha = 0.5;
   this.ctx.fillStyle = "#333333";
-  this.roundRect(0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
+  this.roundRect(this.ctx,0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
   this.ctx.globalAlpha = 0.9;
-  this.roundRect(0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
+  this.roundRect(this.ctx,0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
   this.ctx.globalAlpha = 1.0;
   this.ctx.fillStyle = "white";
   this.ctx.font = divCoords.width/11+"px DaysOne";
@@ -118,9 +83,9 @@ CanvasDrawer.prototype.drawGO = function (board){
 CanvasDrawer.prototype.drawMainMenu = function () {
   this.ctx.globalAlpha = 0.5;
   this.ctx.fillStyle = "#333333";
-  this.roundRect(0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
+  this.roundRect(this.ctx,0,0,  divCoords.width,  divCoords.height,divCoords.width/20,true,false);
   this.ctx.globalAlpha = 0.9;
-  this.roundRect(0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
+  this.roundRect(this.ctx,0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
   this.ctx.globalAlpha = 1.0;
   this.ctx.fillStyle = "#FFFFFF";
   this.ctx.textAlign = "center";
@@ -131,18 +96,18 @@ CanvasDrawer.prototype.drawMainMenu = function () {
   this.ctx.fillText("MEDIUM", 0.5*divCoords.width, 0.45*divCoords.height);
   this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(5,[5]),0.3,0.95);
   this.ctx.fillText("HARD", 0.5*divCoords.width, 0.6*divCoords.height);
+  this.ctx.font = divCoords.width/19+"px DaysOne";
   this.ctx.fillStyle = window.cManager.HSV2RGB(window.cManager.numberHue(7,[7]),0.3,0.95);
   this.ctx.fillText("CREDITS", 0.5*divCoords.width, 0.8*divCoords.height);
-
   this.ctx.textAlign = "left";
 };
 
 CanvasDrawer.prototype.drawCredits = function () {
-  this.ctx.globalAlpha = 0.3;
+  /*this.ctx.globalAlpha = 0.3;
   this.ctx.fillStyle = "#333333";
   this.ctx.fillRect(0,0,  divCoords.width,  divCoords.height);
   this.ctx.globalAlpha = 0.9;
-  this.roundRect(0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
+  this.roundRect(this.ctx,0.1*divCoords.width, 0.1*divCoords.width, 0.8*divCoords.width, 0.8*divCoords.width, divCoords.width/20,true,false);
   this.ctx.globalAlpha = 1.0;
   this.ctx.fillStyle = "white";
   this.ctx.font = divCoords.width/11+"px DaysOne";
@@ -162,64 +127,70 @@ CanvasDrawer.prototype.drawCredits = function () {
   this.ctx.fillStyle = "#ffffff";
   this.ctx.fillText('Tap to Return', divCoords.width/2, (divCoords.height)/2 - 200*this.scaled + 440*this.scaled);
   this.ctx.textAlign = "left";
-
+  */
 };
 
-CanvasDrawer.prototype.drawBox = function (box,deadDraw) {
+CanvasDrawer.prototype.drawBox = function (ctx,box) {
+  borderSc = 3*box.width/100;
+  bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
+  by = box.y*box.width+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
+  bw = box.scale*box.width-borderSc*2
+  bh = box.scale*box.width-borderSc*2
+
+  ctx.fillStyle = box.color;
+  this.roundRect(ctx,bx,by,bw,bh,box.width/30,true,false);
+  ctx.font = box.fontsize*box.scale+"px DaysOne";
+  if(box.fontsize == 0){
+    fs = 60;
+    ctx.font = fs+"px DaysOne";
+    while(ctx.measureText(box.number+'  ').width > bw){
+      fs--;
+      ctx.font = fs+"px DaysOne";
+    }
+    box.fontsize = fs;
+  }
+  this.lineheight =  ctx.measureText('E').width+1;
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  ctx.fillText(box.number, bx+bw/2, (by+bh)-(bh-this.lineheight)/2);
+  ctx.textAlign = "left";
+};
+CanvasDrawer.prototype.drawBGBox = function (ctx,box) {
    borderSc = 3*box.width/100;
    bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
    by = box.y*box.width+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
    bw = box.scale*box.width-borderSc*2
    bh = box.scale*box.width-borderSc*2
 
-   switch(box.type){
-      case "empty":
-        this.ctx.fillStyle = '#CFD5FF';
-        this.roundRect(bx,by,bw,bh,box.width/30,true,false);
-        break;
-      case "number":
-        this.ctx.fillStyle = box.color;
-        this.roundRect(bx,by,bw,bh,box.width/30,true,false);
-        fs = 60;
-        this.ctx.font = fs+"px DaysOne";
-        while(this.ctx.measureText(box.number+'  ').width > bw){
-          fs--;
-          this.ctx.font = fs+"px DaysOne";
-        }
-        this.lineheight =  this.ctx.measureText('E').width+1;
-        this.ctx.fillStyle = "#ffffff";
-        this.ctx.textAlign = "center";
-        this.ctx.fillText(box.number, bx+bw/2, (by+bh)-(bh-this.lineheight)/2);
-        this.ctx.textAlign = "left";
-        break;
-   }
+   ctx.fillStyle = '#CFD5FF';
+   this.roundRect(ctx,bx+1,by+1,bw-2,bh-2,box.width/30,true,false);  
 };
 /**
  *Based on http://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
  * Draws a rounded rectangle using the current state of the canvas.
  */
-CanvasDrawer.prototype.roundRect = function(x, y, width, height, radius, fill, stroke) {
+CanvasDrawer.prototype.roundRect = function(ctx, x, y, width, height, radius, fill, stroke) {
   if (typeof stroke == "undefined" ) {
     stroke = true;
   }
   if (typeof radius === "undefined") {
     radius = 5;
   }
-  this.ctx.beginPath();
-  this.ctx.moveTo(x + radius, y);
-  this.ctx.lineTo(x + width - radius, y);
-  this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  this.ctx.lineTo(x + width, y + height - radius);
-  this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  this.ctx.lineTo(x + radius, y + height);
-  this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  this.ctx.lineTo(x, y + radius);
-  this.ctx.quadraticCurveTo(x, y, x + radius, y);
-  this.ctx.closePath();
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
   if (stroke) {
-    this.ctx.stroke();
+    ctx.stroke();
   }
   if (fill) {
-    this.ctx.fill();
+    ctx.fill();
   }
 }

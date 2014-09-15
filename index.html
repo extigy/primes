@@ -1,8 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href='main.css' media="screen" rel='stylesheet' type='text/css'>
+<meta charset="utf-8">
 <meta name="viewport" content="user-scalable=no, minimal-ui, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, target-densitydpi=device-dpi" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta property="og:title" content="Primes!"/>
+<meta property="og:site_name" content="Primes! game"/>
+<meta property="og:description" content="Tap the tiles to pop out the lowest prime factor. Adjacent primes disappear! Addictive numbers game!"/>
+
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="icon" type="image/png" href="/assets/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/assets/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/assets/favicon-32x32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/webapp.png">
+<link href='main.css' media="screen" rel='stylesheet' type='text/css'>
+
+<title>Primes!</title>
 </head>
 <body>
   <div id="title-container">
@@ -10,10 +26,10 @@
     <p>Tap the tiles to pop out the lowest prime factor. Adjacent primes disappear!</p>
   </div>
   <div id="canvas-container">
-    <canvas id="game-canvas"></canvas>
+    <canvas class="game-canvas" id="fg-canvas"></canvas>
   </div>
   <div id="footer-container">
-    <p>A game by Teggers. Inspired by little number games such as <a href="http://gabrielecirulli.github.io/2048/">2048</a>.</p>
+    <p>Inspired by little number games such as <a href="http://gabrielecirulli.github.io/2048/">2048</a>.</p>
   </div>
   <div class="app">
     <div id="deviceready"></div>

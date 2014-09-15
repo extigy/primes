@@ -14,6 +14,9 @@ body {
   src: url('fonts/DaysOne.ttf');
 }
 
+.game-canvas{
+  -webkit-tap-highlight-color: transparent;
+}
 #canvas-container {
 	width:75vw;
 	height:75vh;

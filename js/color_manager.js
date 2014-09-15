@@ -1,9 +1,6 @@
 var grc = 0.618033988749895;
 function ColorManager() {
-  //we need to keep track of the colours we've generated
   this.cc = 0;
-  //
-  this.mainColor = '#3494d6';
 }
 ColorManager.prototype.dec2hex = function(d) {
   return(("0"+(Number(d).toString(16))).slice(-2).toUpperCase());
@@ -44,6 +41,7 @@ ColorManager.prototype.nextHue = function (){
 }
 
 ColorManager.prototype.numberHue = function (x,fcs){
+  //mix colours from prime factorisation
   var cc = (numbers.npn[fcs[0]])*grc;
   var mhue = cc%1;
   

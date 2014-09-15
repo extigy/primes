@@ -1,5 +1,6 @@
-function AdManager() {
-  this.Adinited==false;
+// iOS Stuff
+/*function AdManager() {
+  this.Adinited=false;
 };
 
 AdManager.prototype.makeAd = function(force) {
@@ -10,7 +11,7 @@ AdManager.prototype.makeAd = function(force) {
     this.requestAdMob();
   }
 };
-/*
+
 AdManager.prototype.initAdMob = function() {
   window.plugins.AdMob.createBannerView(
     {'publisherId': '',
