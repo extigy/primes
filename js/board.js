@@ -24,6 +24,7 @@ function Board(sizex) {
   this.sizey = sizex;
   this.boxwidth = (window.canvasDraw.canvas.width - window.canvasDraw.canvas.width/22)/sizex;
   this.boxes = this.makeBoxes();
+  this.update = 0;
 }
 
 Board.prototype.redoBoxSize = function () {
@@ -182,22 +183,25 @@ Board.prototype.applyGravity= function () {
       }
     }
   }
+
+  window.lManager.board.checkDoubles();
 }
 
 Board.prototype.checkDoubles= function () {
-  var update = 0
+  this.update = 0
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizey; y++) {
       if(this.boxes[x][y].type == "number" && this.doesBoxHaveADouble(this.boxes[x][y])){
-        this.boxes[x][y].delMark = 1;
-        update = 1
+          this.update = 1
+          this.boxes[x][y].delMark = 1
       }
     }
   }
-  if(update){
+  if(this.update == 1){
+    window.lManager.inputManager.locked = 1;
     this.removeMarkedforDel();
-    this.applyGravity();
-    this.checkDoubles();
+  } else {
+    window.lManager.inputManager.locked = 0;
   }
 }
 
@@ -216,13 +220,21 @@ Board.prototype.removeMarkedforDel= function () {
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizey; y++) {
       if(this.boxes[x][y].delMark == 1){
-        this.boxes[x][y].number = 0;
-        this.boxes[x][y].type = "empty";
-        this.boxes[x][y].delMark = 0;
+        window.canvasDraw.animManager.shrinkBox(this.boxes[x][y],function(box){
+          box.number = 0;
+          box.type = "empty";
+          box.delMark = 0;
+          box.scale = "1.0";
+          if(window.canvasDraw.animManager.animFinished()){
+            window.lManager.board.applyGravity();
+          }
+        });
       }
     }
   }
 }
+
+
 
 Board.prototype.totalScore= function () {
   var score = 1;
