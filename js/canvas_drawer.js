@@ -36,7 +36,7 @@ CanvasDrawer.prototype.drawBGinit = function (board) {
   this.roundRect(this.bgctx,0, 0, divCoords.width,divCoords.height,divCoords.width/20,true,false);
 
   for (i = 0;i<board.sizex;i++) {
-    for (j = 0;j<board.sizey;j++) {
+    for (j = 0;j<board.sizex;j++) {
       this.drawBGBox(this.bgctx,board.boxes[i][j]);
     }
   }
@@ -45,14 +45,20 @@ CanvasDrawer.prototype.drawBGinit = function (board) {
 CanvasDrawer.prototype.draw = function (board) {
   this.ctx.drawImage(this.bgcanvas,0, 0);
 
+  //Do queued Animations
+  this.animManager.doAnimFrames();
+
   for (i = 0;i<board.sizex;i++) {
-    for (j = 0;j<board.sizey;j++) {
-      if(board.boxes[i][j].type == "number")this.drawBox(this.ctx,board.boxes[i][j]);
+    for (j = 0;j<board.sizex;j++) {
+      if(board.boxes[i][j].type == "number" && board.boxes[i][j].inAnim == 1)this.drawBox(this.ctx,board.boxes[i][j]);
     }
   }
 
-  //Do queued Animations
-  this.animManager.doAnimFrames();
+  for (i = 0;i<board.sizex;i++) {
+    for (j = 0;j<board.sizex;j++) {
+      if(board.boxes[i][j].type == "number" && board.boxes[i][j].inAnim == 0)this.drawBox(this.ctx,board.boxes[i][j]);
+    }
+  }
   //draw MENU if not in game
   if(window.lManager)if(window.lManager.inGame == 0 && window.lManager.showCredits == 0) this.drawMainMenu();
 };
@@ -134,8 +140,11 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
   borderSc = 3*box.width/100;
   bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
   by = box.y*box.width+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2
-  bw = box.scale*box.width-borderSc*2
-  bh = box.scale*box.width-borderSc*2
+  bw = box.scale*box.width-borderSc*2;
+  bh = box.scale*box.width-borderSc*2;
+
+  bx = bx + box.shiftx*box.width;
+  by = by + box.shifty*box.width;
 
   ctx.fillStyle = box.color;
   this.roundRect(ctx,bx,by,bw,bh,box.width/30,true,false);
@@ -143,7 +152,7 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
   if(box.fontsize == 0){
     fs = 60;
     ctx.font = fs+"px DaysOne";
-    while(ctx.measureText(box.number+'  ').width > bw){
+    while(ctx.measureText(box.number+'  ').width > (box.width-borderSc*2)){
       fs--;
       ctx.font = fs+"px DaysOne";
     }
@@ -155,6 +164,7 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
   ctx.fillText(box.number, bx+bw/2, (by+bh)-(bh-this.lineheight)/2);
   ctx.textAlign = "left";
 };
+
 CanvasDrawer.prototype.drawBGBox = function (ctx,box) {
    borderSc = 3*box.width/100;
    bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2

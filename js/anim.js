@@ -2,10 +2,6 @@ function AnimationManager(canvasMan) {
   this.canvasMan = canvasMan;
   this.animStack = new Array();
   this.callbackStack = new Array();
-  this.init();
-}
-
-AnimationManager.prototype.init = function() {
 }
 
 AnimationManager.prototype.clear = function() {
@@ -14,7 +10,6 @@ AnimationManager.prototype.clear = function() {
 }
 
 AnimationManager.prototype.doAnimFrames = function() {
-  //Draw all queued animations
   for(var i=0;i<this.animStack.length;i++){
     curAnim = this.animStack[i];  
     switch(curAnim.type){
@@ -26,15 +21,45 @@ AnimationManager.prototype.doAnimFrames = function() {
           this.callbackStack.splice(i, 1);
         }
         break;
+      case "boxdrop":
+        done = this.animBoxDrop(curAnim.animData);
+        if(done==1){
+          this.animStack.splice(i, 1);
+          this.callbackStack[i](curAnim.animData.boxInfo,curAnim.animData.botboxInfo);
+          this.callbackStack.splice(i, 1);
+        }
+        break;
+      case "boxpull":
+        done = this.animBoxPull(curAnim.animData);
+        if(done==1){
+          this.animStack.splice(i, 1);
+          this.callbackStack[i](curAnim.animData.boxInfo,curAnim.animData.sourceboxInfo);
+          this.callbackStack.splice(i, 1);
+        }
+        break;
       }
   }
 }
 
 AnimationManager.prototype.addBoxPop = function(box) {
   this.animStack.push(
-    {"type":"boxpop","animData":{"boxInfo":box,"popSizes":["1.0","1.01","1.02","1.035","1.05","1.06","1.07","1.095","1.12","1.095","1.07"]}}
+    {"type":"boxpop","animData":{"boxInfo":box,"popSizes":["1.0","0.98","0.965","0.95","0.94","0.93","0.905","0.88","0.905","0.93"]}}
     );
   this.callbackStack.push(function(){});
+}
+
+AnimationManager.prototype.addBoxDrop = function(topbox,botbox,dir,callback) {
+  this.animStack.push(
+    {"type":"boxdrop","animData":{"boxInfo":topbox,"botboxInfo":botbox,"dropLoc":["0.95","0.8","0.6","0.4","0.2"],"dir":dir}}
+    );
+  this.callbackStack.push(callback);
+}
+
+AnimationManager.prototype.addBoxPull = function(box,sourcebox,dir,scaler,callback) {
+  this.animStack.push(
+    {"type":"boxpull","animData":{"boxInfo":box,"sourceboxInfo":sourcebox,"toscale":scaler,"dropLoc":["0.05","0.2","0.4","0.6","0.8"],"dir":dir}}
+    );
+  this.callbackStack.push(callback);
 }
 
 AnimationManager.prototype.shrinkBox = function(box,callback) {
@@ -50,7 +75,7 @@ AnimationManager.prototype.animBoxPop = function(animData) {
   if(animData.popSizes.length>0){
     sizemult = animData.popSizes.pop();
     if (animData.boxInfo.type == "number"){
-      animData.boxInfo.scale = 2-sizemult;
+      animData.boxInfo.scale = sizemult;
     } else {
       animData.boxInfo.scale = 0;  
     } 
@@ -59,6 +84,70 @@ AnimationManager.prototype.animBoxPop = function(animData) {
     return(1);
   }
 }
+
+AnimationManager.prototype.animBoxPull = function(animData) {
+  if(animData.dropLoc.length>0){
+    dropShift = animData.dropLoc.pop();
+    animData.boxInfo.type = "number"
+    if (animData.boxInfo.type == "number"){
+      switch(animData.dir){
+        case "left":
+          animData.boxInfo.shiftx = -dropShift;
+          if(animData.toscale)animData.boxInfo.scale = 1-dropShift;
+          break;
+        case "right":
+          animData.boxInfo.shiftx = dropShift;
+          if(animData.toscale)animData.boxInfo.scale = 1-dropShift;
+          break;
+        case "up":
+          animData.boxInfo.shifty = -dropShift;
+          if(animData.toscale)animData.boxInfo.scale = 1-dropShift;
+          break;
+        case "down":
+          animData.boxInfo.shifty = dropShift;
+          if(animData.toscale)animData.boxInfo.scale = 1-dropShift;
+          break;
+        }
+    } else {
+      animData.boxInfo.scale = 1;
+    } 
+    animData.boxInfo.inAnim = 1;
+    return (0);
+  } else {
+    animData.boxInfo.inAnim = 0;
+    return(1);
+  }
+}
+
+AnimationManager.prototype.animBoxDrop = function(animData) {
+  if(animData.dropLoc.length>0){
+    dropShift = animData.dropLoc.pop();
+    if (animData.boxInfo.type == "number"){
+      switch(animData.dir){
+        case "left":
+          animData.boxInfo.shiftx = -dropShift;
+          break;
+        case "right":
+          animData.boxInfo.shiftx = dropShift;
+          break;
+        case "up":
+          animData.boxInfo.shifty = -dropShift;
+          break;
+        case "down":
+          animData.boxInfo.shifty = dropShift;
+          break;
+        }
+    } else {
+      animData.boxInfo.shifty = 0;
+    } 
+    animData.boxInfo.inAnim = 1;
+    return (0);
+  } else {
+    animData.boxInfo.inAnim = 0;
+    return(1);
+  }
+}
+
 
 AnimationManager.prototype.animFinished = function() {
   if(this.animStack.length < 1){

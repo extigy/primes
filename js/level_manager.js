@@ -21,20 +21,19 @@ GameManager.prototype.mainMenu = function (modeID) {
   this.inGame = 0;
   this.playpop = 0;
   this.showCredits = 0;
-  window.canvasDraw.drawBGinit(this.board);
+  canvasDraw.drawBGinit(this.board);
 }
 
 GameManager.prototype.restart = function () {
     this.gameover = 0;
     this.playpop = 0;
     this.board = new Board(this.boardsize);
-    window.canvasDraw.drawBGinit(this.board);
+    canvasDraw.drawBGinit(this.board);
     this.makeLevel();
 };
 
 GameManager.prototype.makeLevel = function () {
     this.playpop = 0;
-    //Code for making initial set of primes to go here
     this.board.makeBoxes();
     this.board.makeRandomNumbers(this.psmooth,1,2,this.boardsize-2,this.boardsize-2);
     this.drawAll();
@@ -42,22 +41,23 @@ GameManager.prototype.makeLevel = function () {
 
 GameManager.prototype.drawAll = function () {
   canvasDraw.draw(this.board);
-  if(this.gameover)canvasDraw.drawGO(this.board);
+  if(this.gameover && canvasDraw.animManager.animFinished() && !lManager.inputManager.locked)canvasDraw.drawGO(this.board);
   if(this.showCredits)canvasDraw.drawCredits();
 };
 
 GameManager.prototype.update = function () {
-  //ADD GAMEOVER CHECK
-  //  this.gameover = 1;
-  //  canvasDraw.animManager.clear();
-
   this.drawAll();
+  if(canvasDraw.animManager.animFinished()){
+    lManager.inputManager.locked = 0;
+    lManager.board.checkDoubles();
+  }
 };
 
 GameManager.prototype.handleTouch = function (mousePos) {
   var bx = Math.floor((mousePos.x - divCoords.bl)/this.board.boxwidth);
   var by = Math.floor((mousePos.y - divCoords.br)/this.board.boxwidth);
   if(bx >= 0 && bx < this.boardsize && by >= 0 && by < this.boardsize){
+    window.lManager.inputManager.locked = 1;
     bn = this.board.boxes[bx][by].number;
     bfs= factor(bn);
     if(bfs.length>1){
@@ -67,28 +67,22 @@ GameManager.prototype.handleTouch = function (mousePos) {
       if(emptyN.length>0){
         //we can expand into an empty block
         geb = emptyN[Math.floor(Math.random()*emptyN.length)];
-        this.board.boxes[bx][by].number = split[1];
-        this.board.boxes[bx][by].doColor();
-        this.board.boxes[geb.x][geb.y].number = split[0];
-        this.board.boxes[geb.x][geb.y].doColor();
-        this.board.boxes[geb.x][geb.y].type = "number";
+        this.board.animatePull(this.board.boxes[geb.x][geb.y],this.board.boxes[bx][by],split[0],split[1],this.board.boxes[geb.x][geb.y].rel,1);
+      
       } else {
         //ok we're gonna have to push a block out.
         possDirs = this.board.getPushableNeighbors(this.board.boxes[bx][by]);
         if(possDirs.length>0){
         //we can push into an empty block
           gdir = possDirs[Math.floor(Math.random()*possDirs.length)];
-          this.board.boxes[bx][by].number = split[1];
-          this.board.boxes[bx][by].doColor();
-          this.board.pushBoxes(this.board.boxes[bx][by],gdir,split[0]);
+          this.board.pushBoxes(this.board.boxes[bx][by],gdir,split[0],split[1]);
         } else {
           //can't do anything :(
         }
       }
-      window.canvasDraw.animManager.addBoxPop(this.board.boxes[bx][by])
-      this.board.applyGravity();
-      this.board.checkDoubles();
-      if(this.canMove() == 0){
+
+      canvasDraw.animManager.addBoxPop(this.board.boxes[bx][by]);
+      if(!this.canMove()){
         this.gameover = 1;
       }
     }
@@ -99,17 +93,15 @@ GameManager.prototype.handleTouch = function (mousePos) {
 
 GameManager.prototype.canMove = function(){
   for (bx = 0; bx < this.board.sizex; bx++) {
-    for (by = 0; by < this.board.sizey; by++) {
+    for (by = 0; by < this.board.sizex; by++) {
       bn = this.board.boxes[bx][by].number;
       bfs= factor(bn);
       if(bfs.length>1){
-        //we are gonna try and split now
         var split = [bfs[0],bn/bfs[0]];
         emptyN = this.board.getEmptyNeighbors(this.board.boxes[bx][by]);
         if(emptyN.length>0){
           return (1);
         } else {
-          //ok we're gonna have to push a block out.
           possDirs = this.board.getPushableNeighbors(this.board.boxes[bx][by]);
           if(possDirs.length>0){
             return (1);
@@ -151,14 +143,12 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
       this.inGame = 1;
       this.boardsize = 5;
       this.psmooth = numbers.threesmooth;
-      //if(this.curMode.mode != 2) this.chooseMode(2,4);
       this.restart();
     }
     if(mousePos.x > divCoords.left && mousePos.x < divCoords.left+divCoords.width && mousePos.y > divCoords.top+0.37*divCoords.height && mousePos.y < divCoords.top+0.45*divCoords.height){
       this.inGame = 1;
       this.boardsize = 5;
       this.psmooth = numbers.elevensmooth;
-      //if(this.curMode.mode != 0) this.chooseMode(0,4);
       this.restart();
     }
 
@@ -166,7 +156,6 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
       this.inGame = 1;
       this.psmooth = numbers.twentythreesmooth;
       this.boardsize = 7;
-      //if(this.curMode.mode != 2) this.chooseMode(2,4);
       this.restart();
     }
     if(mousePos.x > 0 && mousePos.x < divCoords.left+divCoords.width && mousePos.y > (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 600 - 40) && mousePos.y < (divCoords.top+divCoords.height)/2 +canvasDraw.scaled*(- 300 + 600 + 20)){
@@ -181,6 +170,6 @@ window.requestAnimFrame = (function(){
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
           function( callback ){
-            window.setTimeout(callback, 1000 / 60);
+            window.setTimeout(callback, 1000 /5);
           };
 })();

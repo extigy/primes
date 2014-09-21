@@ -8,11 +8,15 @@ function Box(px,py,bwidth) {
   this.color            = 0;
   this.delMark          = 0;
   this.fontsize         = 0;
+  this.shiftx           = 0;
+  this.shifty           = 0;
+  this.nextno           = 0;
+  this.inAnim           = 0;
 }
 
 Box.prototype.doColor = function() {
   fcs = factor(this.number);
-  this.color = window.cManager.HSV2RGB(window.cManager.numberHue(this.number,fcs),
+  this.color = cManager.HSV2RGB(cManager.numberHue(this.number,fcs),
                             0.95-0.7*tanh((fcs.length-1)/2),
                             0.95-0.5*tanh((fcs.length-1)/2));
   this.fontsize = 0;
@@ -21,16 +25,14 @@ Box.prototype.doColor = function() {
 
 function Board(sizex) {
   this.sizex = sizex;
-  this.sizey = sizex;
-  this.boxwidth = (window.canvasDraw.canvas.width - window.canvasDraw.canvas.width/22)/sizex;
+  this.boxwidth = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/sizex;
   this.boxes = this.makeBoxes();
-  this.update = 0;
 }
 
 Board.prototype.redoBoxSize = function () {
-  this.boxwidth = (window.canvasDraw.canvas.width - window.canvasDraw.canvas.width/22)/this.sizex;
+  this.boxwidth = (canvasDraw.canvas.width - canvasDraw.canvas.width/22)/this.sizex;
   for (x = 0; x < this.sizex; x++) {
-    for (y = 0; y < this.sizey; y++) {
+    for (y = 0; y < this.sizex; y++) {
       this.boxes[x][y].width = this.boxwidth;
     }
   }
@@ -40,7 +42,7 @@ Board.prototype.makeBoxes = function () {
   var boxes = [];
   for (x = 0; x < this.sizex; x++) {
     boxes[x] = [];
-    for (y = 0; y < this.sizey; y++) {
+    for (y = 0; y < this.sizex; y++) {
       boxes[x].push(new Box(x,y,this.boxwidth));
     }
   }
@@ -48,9 +50,10 @@ Board.prototype.makeBoxes = function () {
 };
 
 Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
-  for (var i=sx;i<sx+wx;i++){
-    for(var j=sy;j<sy+wy;j++){
+  for (i=sx;i<sx+wx;i++){
+    for(j=sy;j<sy+wy;j++){
       this.boxes[i][j].type = "number";
+      this.boxes[i][j].inAnim = 0;
       this.boxes[i][j].number = psmooth[Math.floor(Math.random()*psmooth.length)];
       this.boxes[i][j].doColor();
     }
@@ -59,21 +62,25 @@ Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
 }
 
 Board.prototype.isInside = function (loc) {
-  return loc.x >= 0 && loc.x < this.sizex && loc.y >= 0 && loc.y < this.sizey;
+  return loc.x >= 0 && loc.x < this.sizex && loc.y >= 0 && loc.y < this.sizex;
 };
 
 Board.prototype.getNeighbors = function (box) {
   nboxes = [];
   if(this.isInside({x:box.x+1,y:box.y})){
+    this.boxes[box.x+1][box.y].rel = "left"
     nboxes.push(this.boxes[box.x+1][box.y]);
   }
   if(this.isInside({x:box.x,y:box.y+1})){
+    this.boxes[box.x][box.y+1].rel = "up"
     nboxes.push(this.boxes[box.x][box.y+1])
   }
   if(this.isInside({x:box.x-1,y:box.y})){
+    this.boxes[box.x-1][box.y].rel = "right"
     nboxes.push(this.boxes[box.x-1][box.y]);
   }
   if(this.isInside({x:box.x,y:box.y-1})){
+    this.boxes[box.x][box.y-1].rel = "down"
     nboxes.push(this.boxes[box.x][box.y-1]);
   }
   return nboxes;
@@ -82,7 +89,7 @@ Board.prototype.getNeighbors = function (box) {
 Board.prototype.getEmptyNeighbors = function (box) {
   nboxes = this.getNeighbors(box);
   oboxes = [];
-  for(var i=0;i<nboxes.length;i++){
+  for(i=0;i<nboxes.length;i++){
     if(nboxes[i].type == "empty"){
       oboxes.push(nboxes[i]);
     }
@@ -91,28 +98,23 @@ Board.prototype.getEmptyNeighbors = function (box) {
 };
 
 Board.prototype.getPushableNeighbors = function (box) {
-  var i;
   nboxes = [];
-  //Lets check left
   for(i=0;i<box.x;i++){
     if(this.boxes[i][box.y].type=="empty"){
-      //nboxes.push(this.boxes[i][box.y]);
       nboxes.push("left");
       break;
     }
   }
-  //Lets check right
+
   for(i=box.x+1;i<this.sizex;i++){
     if(this.boxes[i][box.y].type=="empty"){
-      //nboxes.push(this.boxes[i][box.y]);
       nboxes.push("right");
       break;
     }
   }
-  //Lets check up
+
   for(i=0;i<box.y;i++){
     if(this.boxes[box.x][i].type=="empty"){
-      //nboxes.push(this.boxes[box.x][i]);
       nboxes.push("up");
       break;
     }
@@ -120,94 +122,139 @@ Board.prototype.getPushableNeighbors = function (box) {
   return nboxes;
 };
 
-Board.prototype.pushBoxes= function (box,dir,nn) {
+Board.prototype.pushBoxes= function (box,dir,nn,on) {
   var temp;
-  var temp2
+  var temp2;
   switch(dir){
     case "left":
+      temp = this.boxes[box.x-1][box.y].number
       temp2 = nn;
-      for(i=box.x-1;i>=0;i--){
-        temp = this.boxes[i][box.y].number
-        this.boxes[i][box.y].number = temp2;
-        this.boxes[i][box.y].doColor();
-        temp2 = temp;
-        if(this.boxes[i][box.y].type=="empty"){
-          this.boxes[i][box.y].type = "number";
+      this.boxes[box.x-1][box.y].shiftx = 1;
+      this.animatePull(this.boxes[box.x-1][box.y],this.boxes[box.x][box.y],temp2,on,"right",1);
+      for(i=box.x-1;i>0;i--){
+        this.boxes[i-1][box.y].shiftx = 1;
+        temp3 = this.boxes[i-1][box.y].number;
+        temp2 = this.boxes[i][box.y].number
+        this.animatePull(this.boxes[i-1][box.y],this.boxes[i][box.y],temp,temp2,"right",0);
+        temp = temp3;
+        if(this.boxes[i-1][box.y].type=="empty"){
           break;
         }
+        this.boxes[i-1][box.y].type = "moving";
+        this.boxes[i-1][box.y].inAnim = 1;
       }
-    break;
+      break;
     case "right":
+      temp = this.boxes[box.x+1][box.y].number
       temp2 = nn;
-      for(i=box.x+1;i<this.sizex;i++){
-        temp = this.boxes[i][box.y].number
-        this.boxes[i][box.y].number = temp2;
-        this.boxes[i][box.y].doColor();
-        temp2 = temp;
-        if(this.boxes[i][box.y].type=="empty"){
-          this.boxes[i][box.y].type = "number";
+      this.boxes[box.x+1][box.y].shiftx = -1;
+      this.animatePull(this.boxes[box.x+1][box.y],this.boxes[box.x][box.y],temp2,on,"left",1);
+      for(i=box.x+1;i<this.sizex-1;i++){
+        this.boxes[i+1][box.y].shiftx = -1;
+        temp3 = this.boxes[i+1][box.y].number;
+        temp2 = this.boxes[i][box.y].number
+        this.animatePull(this.boxes[i+1][box.y],this.boxes[i][box.y],temp,temp2,"left",0);
+        temp = temp3;
+        if(this.boxes[i+1][box.y].type=="empty"){
           break;
         }
+        this.boxes[i+1][box.y].type = "moving";
+        this.boxes[i+1][box.y].inAnim = 1;
       }
-    break;
+      break;
     case "up":
+      temp = this.boxes[box.x][box.y-1].number
       temp2 = nn;
-      for(i=box.y-1;i>=0;i--){
-        temp = this.boxes[box.x][i].number
-        this.boxes[box.x][i].number = temp2;
-        this.boxes[box.x][i].doColor();
-        temp2 = temp;
-        if(this.boxes[box.x][i].type=="empty"){
-          this.boxes[box.x][i].type = "number";
+      this.boxes[box.x][box.y-1].shifty = 1;
+      this.animatePull(this.boxes[box.x][box.y-1],this.boxes[box.x][box.y],temp2,on,"down",1);
+      for(i=box.y-1;i>0;i--){
+        this.boxes[box.x][i-1].shifty = 1;
+        temp3 = this.boxes[box.x][i-1].number;
+        temp2 = this.boxes[box.x][i].number
+        this.animatePull(this.boxes[box.x][i-1],this.boxes[box.x][i],temp,temp2,"down",0);
+        temp = temp3;
+        if(this.boxes[box.x][i-1].type=="empty"){
           break;
         }
+        this.boxes[box.x][i-1].type = "moving";
+        this.boxes[i+1][box.y].inAnim = 1;
       }
-    break;
   }
+}
+
+Board.prototype.animatePull= function (box,sourcebox,nn,on,rel,scaler) {
+  box.number = nn;
+  box.doColor();
+  sourcebox.number = on;
+  sourcebox.doColor();
+  window.canvasDraw.animManager.addBoxPull(box,sourcebox,rel,scaler,function(box,sourcebox){
+    box.shifty = 0;
+    box.shiftx = 0;
+    sourcebox.shifty = 0;
+    sourcebox.shiftx = 0;
+    box.scale = 1
+    box.type = "number";
+    box.inAnim = 0;
+    sourcebox.type = "number"
+    sourcebox.inAnim = 0;
+    lManager.board.applyGravity()
+  })
+}
+
+
+
+Board.prototype.animateDrop= function (oldbox,newbox,nn) {
+  newbox.type = "moving"
+  newbox.inAnim = 1;
+  newbox.nextno = nn;
+  window.canvasDraw.animManager.addBoxDrop(oldbox,newbox,"down",function(topbox,botbox){
+    botbox.type = "number";
+    botbox.inAnim = 0;
+    topbox.type = "empty";
+    botbox.number = botbox.nextno;
+    botbox.nn = 0;
+    topbox.number = 0;
+    topbox.shifty = 0;
+    topbox.shiftx = 0;
+    botbox.shifty = 0;
+    botbox.shiftx = 0;
+    botbox.doColor();
+    lManager.board.applyGravity()
+  })
 }
 
 Board.prototype.applyGravity= function () {
+  var flag = 0
   for (x = 0; x < this.sizex; x++) {
-    clear = 0
-    while(clear == 0){
-      clear = 1;
-      for (y = this.sizey-2; y>=0; y--) {
-        if(this.boxes[x][y+1].type == "empty" && this.boxes[x][y].type == "number"){
-          clear = 0;
-          this.boxes[x][y+1].type = "number";
-          this.boxes[x][y].type = "empty";
-          this.boxes[x][y+1].number = this.boxes[x][y].number;
-          this.boxes[x][y].number = 0;
-          this.boxes[x][y+1].doColor();
-        }
+    for (y = this.sizex-2; y>=0; y--) {
+      if(this.boxes[x][y+1].type == "empty" && this.boxes[x][y].type == "number"){
+        this.animateDrop(this.boxes[x][y],this.boxes[x][y+1],this.boxes[x][y].number);
+        flag = 1
       }
     }
   }
-
-  window.lManager.board.checkDoubles();
+  return(flag);
 }
 
 Board.prototype.checkDoubles= function () {
-  this.update = 0
+  var flag = 0
   for (x = 0; x < this.sizex; x++) {
-    for (y = 0; y < this.sizey; y++) {
+    for (y = 0; y < this.sizex; y++) {
       if(this.boxes[x][y].type == "number" && this.doesBoxHaveADouble(this.boxes[x][y])){
-          this.update = 1
+          flag = 1
           this.boxes[x][y].delMark = 1
       }
     }
   }
-  if(this.update == 1){
-    window.lManager.inputManager.locked = 1;
+  if(flag){
+    lManager.inputManager.locked = 1;
     this.removeMarkedforDel();
-  } else {
-    window.lManager.inputManager.locked = 0;
   }
 }
 
 Board.prototype.doesBoxHaveADouble =  function (box) {
   nboxes = this.getNeighbors(box);
-  for(var i=0;i<nboxes.length;i++){
+  for(i=0;i<nboxes.length;i++){
     if(nboxes[i].type == "number"){
       if(nboxes[i].number == box.number && (numbers.primes.indexOf(box.number) > -1)){
         return 1;
@@ -218,17 +265,21 @@ Board.prototype.doesBoxHaveADouble =  function (box) {
 
 Board.prototype.removeMarkedforDel= function () {
   for (x = 0; x < this.sizex; x++) {
-    for (y = 0; y < this.sizey; y++) {
-      if(this.boxes[x][y].delMark == 1){
-        window.canvasDraw.animManager.shrinkBox(this.boxes[x][y],function(box){
-          box.number = 0;
-          box.type = "empty";
-          box.delMark = 0;
-          box.scale = "1.0";
-          if(window.canvasDraw.animManager.animFinished()){
-            window.lManager.board.applyGravity();
-          }
-        });
+    for (y = 0; y < this.sizex; y++) {
+      if(this.boxes[x][y].delMark){
+        if(!this.boxes[x][y].inAnim){
+          canvasDraw.animManager.shrinkBox(this.boxes[x][y],function(box){
+            box.number = 0;
+            box.type = "empty";
+            box.delMark = 0;
+            box.scale = "1.0";
+            box.inAnim = 0;
+            if(canvasDraw.animManager.animFinished()){
+             lManager.board.applyGravity()
+           }
+          });
+          this.boxes[x][y].inAnim = 1;
+        }
       }
     }
   }
@@ -239,7 +290,7 @@ Board.prototype.removeMarkedforDel= function () {
 Board.prototype.totalScore= function () {
   var score = 1;
   for (x = 0; x < this.sizex; x++) {
-    for (y = 0; y < this.sizey; y++) {
+    for (y = 0; y < this.sizex; y++) {
         if(this.boxes[x][y].number>0 && this.boxes[x][y].type=="number") score *= this.boxes[x][y].number;
     }
   }
