@@ -64,7 +64,7 @@ AnimationManager.prototype.addBoxPull = function(box,sourcebox,dir,scaler,callba
 
 AnimationManager.prototype.shrinkBox = function(box,callback) {
   this.animStack.push(
-    {"type":"boxpop","animData":{"boxInfo":box,"popSizes":["1.9","1.8","1.7","1.6","1.5","1.4","1.3","1.2","1.1","1.0"]}}
+    {"type":"boxpop","animData":{"boxInfo":box,"popSizes":["0.1","0.2","0.3","0.4","0.5","0.6","0.7","0.8","0.9","1.0"]}}
     );
   this.callbackStack.push(callback);
 }
