@@ -19,7 +19,6 @@ var app = {
         window.addEventListener('load', function(event){
           window.canvasDraw = new CanvasDrawer();
           window.cManager = new ColorManager();
-          window.sManager = new SoundManager();
           window.lManager = new GameManager(4);
           (function animloop(){requestAnimFrame(animloop);window.lManager.update();})();
           //if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide();

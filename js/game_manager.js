@@ -6,8 +6,6 @@ function GameManager(size) {
   this.gameover;
   this.inGame;
   this.psmooth = numbers.elevensmooth;
-  //window.sManager.bg.setVolume(0.5);
-  //window.sManager.bg.play({numberOfLoops: 100000, playAudioWhenScreenIsLocked : false });
   //this.best = window.localStorage.getItem("best"+this.curModeID);
   //if(this.best == null) this.best = 0;
   this.mainMenu(0);
