@@ -1,7 +1,20 @@
-var grc = 0.618033988749895;
 function ColorManager() {
-  this.cc = 0;
+  this.grc = 0.618033988749895;
 }
+
+ColorManager.prototype.numberHue = function (x,fcs){
+  //mix colours using prime factorisation
+  var cc = (numbers.npn[fcs[0]])*this.grc;
+  var mhue = cc%1;
+  
+  for (var i=1;i<fcs.length;i++){
+    cc = (numbers.npn[fcs[i]])*this.grc;
+    cc %= 1;
+    mhue = (mhue+cc)/2;
+  }
+  return mhue;
+}
+
 ColorManager.prototype.dec2hex = function(d) {
   return(("0"+(Number(d).toString(16))).slice(-2).toUpperCase());
 }
@@ -32,23 +45,4 @@ ColorManager.prototype.HSV2RGB = function(h,s,v){
     break;
   }
   return('#'+this.dec2hex(Math.round(r*256))+this.dec2hex(Math.round(g*256))+this.dec2hex(Math.round(b*256)));
-}
-
-ColorManager.prototype.nextHue = function (){
-  this.cc += grc;
-  this.cc %= 1;
-  return this.cc
-}
-
-ColorManager.prototype.numberHue = function (x,fcs){
-  //mix colours from prime factorisation
-  var cc = (numbers.npn[fcs[0]])*grc;
-  var mhue = cc%1;
-  
-  for (var i=1;i<fcs.length;i++){
-    cc = (numbers.npn[fcs[i]])*grc;
-    cc %= 1;
-    mhue = (mhue+cc)/2;
-  }
-  return mhue;
 }

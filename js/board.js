@@ -34,6 +34,7 @@ Board.prototype.redoBoxSize = function () {
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizex; y++) {
       this.boxes[x][y].width = this.boxwidth;
+      this.boxes[x][y].fontsize = 0;
     }
   }
 };
@@ -141,7 +142,6 @@ Board.prototype.pushBoxes= function (box,dir,nn,on) {
           break;
         }
         this.boxes[i-1][box.y].type = "moving";
-        this.boxes[i-1][box.y].inAnim = 1;
       }
       break;
     case "right":
@@ -159,7 +159,6 @@ Board.prototype.pushBoxes= function (box,dir,nn,on) {
           break;
         }
         this.boxes[i+1][box.y].type = "moving";
-        this.boxes[i+1][box.y].inAnim = 1;
       }
       break;
     case "up":
@@ -177,7 +176,6 @@ Board.prototype.pushBoxes= function (box,dir,nn,on) {
           break;
         }
         this.boxes[box.x][i-1].type = "moving";
-        this.boxes[i+1][box.y].inAnim = 1;
       }
   }
 }
@@ -194,9 +192,7 @@ Board.prototype.animatePull= function (box,sourcebox,nn,on,rel,scaler) {
     sourcebox.shiftx = 0;
     box.scale = 1
     box.type = "number";
-    box.inAnim = 0;
     sourcebox.type = "number"
-    sourcebox.inAnim = 0;
     lManager.board.applyGravity()
   })
 }
@@ -205,11 +201,9 @@ Board.prototype.animatePull= function (box,sourcebox,nn,on,rel,scaler) {
 
 Board.prototype.animateDrop= function (oldbox,newbox,nn) {
   newbox.type = "moving"
-  newbox.inAnim = 1;
   newbox.nextno = nn;
   window.canvasDraw.animManager.addBoxDrop(oldbox,newbox,"down",function(topbox,botbox){
     botbox.type = "number";
-    botbox.inAnim = 0;
     topbox.type = "empty";
     botbox.number = botbox.nextno;
     botbox.nn = 0;
@@ -273,12 +267,10 @@ Board.prototype.removeMarkedforDel= function () {
             box.type = "empty";
             box.delMark = 0;
             box.scale = "1.0";
-            box.inAnim = 0;
             if(canvasDraw.animManager.animFinished()){
              lManager.board.applyGravity()
            }
           });
-          this.boxes[x][y].inAnim = 1;
         }
       }
     }

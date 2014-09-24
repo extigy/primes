@@ -1,6 +1,8 @@
 var globalAdEnable = false;
 function AdManager() {
-  AdManager.prototype.makeAd = function(force) {}
+  AdManager.prototype.makeAd = function(force) {
+    //FOR IOS: no ads yet lol
+  }
 };
 
 var app = {
@@ -34,6 +36,7 @@ var app = {
       },
     // deviceready Event Handler
     onDeviceReady: function() {
+        //MORE IOS SETUP
         console.log("we are an app");
     }
 };
