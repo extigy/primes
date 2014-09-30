@@ -59,6 +59,9 @@ CanvasDrawer.prototype.draw = function (board) {
       if(board.boxes[i][j].type == "number" && board.boxes[i][j].inAnim == 0)this.drawBox(this.ctx,board.boxes[i][j]);
     }
   }
+
+  this.star(this.ctx, 0, 0, 90, 5, 0.5)
+
   //draw MENU if not in game
   if(window.lManager)if(window.lManager.inGame == 0 && window.lManager.showCredits == 0) this.drawMainMenu();
 };
@@ -203,4 +206,24 @@ CanvasDrawer.prototype.roundRect = function(ctx, x, y, width, height, radius, fi
   if (fill) {
     ctx.fill();
   }
+}
+
+//FROM: http://programmingthomas.wordpress.com/2012/05/16/drawing-stars-with-html5-canvas/
+//Much thanks!
+CanvasDrawer.prototype.star = function(ctx, x, y, r, p, m)
+{
+    ctx.save();
+    ctx.beginPath();
+    ctx.translate(x, y);
+    ctx.moveTo(0,0-r);
+    for (var i = 0; i < p; i++)
+    {
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - (r*m));
+        ctx.rotate(Math.PI / p);
+        ctx.lineTo(0, 0 - r);
+    }
+    ctx.closePath()
+    ctx.fill();
+    ctx.restore();
 }
