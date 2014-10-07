@@ -59,7 +59,7 @@ GameManager.prototype.handleTouch = function (mousePos) {
         //we can expand into an empty block
         geb = emptyN[Math.floor(Math.random()*emptyN.length)];
         this.board.animatePull(this.board.boxes[geb.x][geb.y],this.board.boxes[bx][by],split[0],split[1],this.board.boxes[geb.x][geb.y].rel,1);
-      
+
       } else {
         //ok we're gonna have to push a block out.
         possDirs = this.board.getPushableNeighbors(this.board.boxes[bx][by]);
@@ -77,7 +77,7 @@ GameManager.prototype.handleTouch = function (mousePos) {
         this.gameover = 1;
       }
     }
-    
+
   }
 
 }
@@ -101,7 +101,7 @@ GameManager.prototype.canMove = function(){
       }
     }
   }
-  return(0);  
+  return(0);
 }
 
 GameManager.prototype.handleEvent = function (mousePos,event) {

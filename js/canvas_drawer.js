@@ -75,16 +75,56 @@ CanvasDrawer.prototype.drawGO = function (board){
   this.ctx.fillStyle = "white";
   this.ctx.font = divCoords.width/11+"px DaysOne";
   this.ctx.textAlign = "center";
-  this.ctx.fillText("Game Over", 0.5*divCoords.width, 0.3*divCoords.height);
+  score = board.totalScore();
+  if(Math.floor(score) > 4){
+    //this.ctx.shadowBlur = 10;
+    //this.ctx.shadowColor = "#EEEE00";
+    //this.ctx.fillStyle = "#EEEE00";
+    this.ctx.font = divCoords.width/9+"px DaysOne";
+    this.ctx.fillText("You Win!", 0.5*divCoords.width, 0.3*divCoords.height);
+    this.ctx.shadowBlur = 0;
+  } else {
+    this.ctx.fillText("Game Over", 0.5*divCoords.width, 0.3*divCoords.height);
+  }
   this.ctx.font = divCoords.width/18+"px DaysOne";
   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(3,[3]),0.3,0.95);
-  this.ctx.fillText("Score: "+ board.totalScore(), 0.5*divCoords.width, 0.5*divCoords.height);
+  //this.ctx.fillText("Score"/*+ board.totalScore()*/, 0.5*divCoords.width, 0.42*divCoords.height);
   this.ctx.font = divCoords.width/16+"px DaysOne";
   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(2,[2]),0.3,0.95);
   this.ctx.fillText("Play Again", 0.5*divCoords.width, 0.7*divCoords.height);
-   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(5,[5]),0.3,0.95);
+  this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(5,[5]),0.3,0.95);
   this.ctx.fillText("Change Difficulty", 0.5*divCoords.width, 0.8*divCoords.height);
   this.ctx.textAlign = "left";
+
+  this.ctx.shadowBlur = 10;
+  this.ctx.shadowColor = "#EEEE00";
+  this.ctx.fillStyle = "#EEEE00";
+  if(score < 1){
+    this.ctx.fillStyle = "#666666";
+    this.ctx.shadowBlur = 0;
+  }
+  this.star(this.ctx, 0.250*divCoords.width, 0.48*divCoords.height, 0.06*divCoords.width, 5, 0.5)
+  if(score < 2){
+    this.ctx.fillStyle = "#666666";
+    this.ctx.shadowBlur = 0;
+  }
+  this.star(this.ctx, 0.375*divCoords.width, 0.48*divCoords.height, 0.06*divCoords.width, 5, 0.5)
+  if(score < 3){
+    this.ctx.fillStyle = "#666666";
+    this.ctx.shadowBlur = 0;
+  }
+  this.star(this.ctx, 0.5*divCoords.width, 0.48*divCoords.height, 0.06*divCoords.width, 5, 0.5)
+  if(score < 4){
+    this.ctx.fillStyle = "#666666";
+    this.ctx.shadowBlur = 0;
+  }
+  this.star(this.ctx, 0.625*divCoords.width, 0.48*divCoords.height, 0.06*divCoords.width, 5, 0.5)
+  if(score < 5){
+    this.ctx.fillStyle = "#666666";
+    this.ctx.shadowBlur = 0;
+  }
+  this.star(this.ctx, 0.750*divCoords.width, 0.48*divCoords.height, 0.06*divCoords.width, 5, 0.5)
+  this.ctx.shadowBlur = 0;
 };
 
 CanvasDrawer.prototype.drawMainMenu = function () {
@@ -97,12 +137,16 @@ CanvasDrawer.prototype.drawMainMenu = function () {
   this.ctx.fillStyle = "#FFFFFF";
   this.ctx.textAlign = "center";
   this.ctx.font = divCoords.width/9+"px DaysOne";
+  this.ctx.shadowBlur = 20;
+  this.ctx.shadowColor = "black";
+  //this.ctx.fillStyle = "#EEF3E7"
   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(3,[3]),0.3,0.95);
   this.ctx.fillText("EASY", 0.5*divCoords.width, 0.33*divCoords.height);
   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(2,[2]),0.3,0.95);
   this.ctx.fillText("MEDIUM", 0.5*divCoords.width, 0.53*divCoords.height);
   this.ctx.fillStyle = cManager.HSV2RGB(cManager.numberHue(5,[5]),0.3,0.95);
   this.ctx.fillText("HARD", 0.5*divCoords.width, 0.73*divCoords.height);
+  this.ctx.shadowBlur = 0;
   this.ctx.textAlign = "left";
 };
 
@@ -128,7 +172,10 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
   }
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
+  this.ctx.shadowBlur = 10;
+  this.ctx.shadowColor = "#333333";
   ctx.fillText(box.number, bx+bw/2, (by+bh)-(bh-ctx.measureText('E').width+1)/2);
+  this.ctx.shadowBlur = 0;
   ctx.textAlign = "left";
 };
 
@@ -140,7 +187,7 @@ CanvasDrawer.prototype.drawBGBox = function (ctx,box) {
    bh = box.width-borderSc*2
 
    ctx.fillStyle = '#CFD5FF';
-   this.roundRect(ctx,bx+1,by+1,bw-2,bh-2,box.width/30,true,false);  
+   this.roundRect(ctx,bx+1,by+1,bw-2,bh-2,box.width/30,true,false);
 };
 
 //Based on http://js-bits.blogspot.co.uk/2010/07/canvas-rounded-corner-rectangles.html

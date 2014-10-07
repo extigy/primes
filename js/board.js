@@ -286,6 +286,8 @@ Board.prototype.totalScore= function () {
         if(this.boxes[x][y].number>0 && this.boxes[x][y].type=="number") score *= this.boxes[x][y].number;
     }
   }
-  return (Math.ceil(Math.log(score) / Math.LN10))
+  score = Math.ceil(Math.log(score) / Math.LN10);
+  //return Math.max(5-score,0);
+  score = Math.max(5 - score/2,0);
   return score;
 }
