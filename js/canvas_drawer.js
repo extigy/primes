@@ -11,6 +11,7 @@ function CanvasDrawer() {
   this.setUpUIAR();
   this.preRender = {};
   this.preRenderctx = {};
+  this.renderi = 0;
 }
 
 CanvasDrawer.prototype.prepareCanvas = function(dcanvas) {
@@ -33,26 +34,37 @@ CanvasDrawer.prototype.setUpUIAR = function() {
 
 CanvasDrawer.prototype.preRenderBoxes = function() {
   var tbox;
+  i=window.canvasDraw.renderi;
+  if(i == 0){
+    window.canvasDraw.ctx.fillStyle = "#000000";
+    window.canvasDraw.ctx.font = 15*devicePixelRatio+"px DaysOne";
+    window.canvasDraw.ctx.textAlign = "center";
+    window.canvasDraw.ctx.shadowBlur = 10;
+    window.canvasDraw.ctx.shadowColor = "#333333";
+  }
   bs = window.lManager.board.boxwidth;
-  this.ctx.fillStyle = "#ffffff";
-  this.ctx.textAlign = "center";
-  this.ctx.shadowBlur = 10;
-  this.ctx.shadowColor = "#333333";
-  for(var i=0;i<numbers.twentythreesmooth.length;i++){
+  window.canvasDraw.preRender[numbers.twentythreesmooth[i]] = document.createElement('canvas');
+  window.canvasDraw.preRender[numbers.twentythreesmooth[i]].width = bs;
+  window.canvasDraw.preRender[numbers.twentythreesmooth[i]].height = bs;
+  window.canvasDraw.preRenderctx[numbers.twentythreesmooth[i]]=window.canvasDraw.preRender[numbers.twentythreesmooth[i]].getContext('2d');
 
-    this.preRender[numbers.twentythreesmooth[i]] = document.createElement('canvas');
-    this.preRender[numbers.twentythreesmooth[i]].width = bs;
-    this.preRender[numbers.twentythreesmooth[i]].height = bs;
-    this.preRenderctx[numbers.twentythreesmooth[i]]=this.preRender[numbers.twentythreesmooth[i]].getContext('2d');
-
-    tbox = new Box(0,0,bs);
-    tbox.number = numbers.twentythreesmooth[i];
-    tbox.type = 'number';
-    tbox.doColor();
-    this.drawPreBox(this.preRenderctx[numbers.twentythreesmooth[i]],tbox);
-
-    this.ctx.fillText("Pre rendering boxes ("+i+"/"+numbers.twentythreesmooth.length+")", divCoords.width/2,divCoords.height/2);
-
+  tbox = new Box(0,0,bs);
+  tbox.number = numbers.twentythreesmooth[i];
+  tbox.type = 'number';
+  tbox.doColor();
+  window.canvasDraw.drawPreBox(window.canvasDraw.preRenderctx[numbers.twentythreesmooth[i]],tbox);
+  if( i % 9 == 7){
+    requestAnimFrame(function(){
+      window.canvasDraw.ctx.clearRect(0, 0, divCoords.width,divCoords.height);
+      window.canvasDraw.ctx.fillText("Loading:", divCoords.width/2,0.4*divCoords.height);
+      window.canvasDraw.ctx.fillText("Pre rendering boxes ("+i+"/"+(numbers.twentythreesmooth.length-1)+")", divCoords.width/2,divCoords.height/2);
+    });
+  }
+  window.canvasDraw.renderi++;
+  if(i < numbers.twentythreesmooth.length-1){
+    window.setTimeout(window.canvasDraw.preRenderBoxes, 0);
+  } else {
+    requestAnimFrame(animloop);
   }
 }
 
@@ -223,7 +235,7 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
 
   ctx.fillStyle = box.color;
   this.roundRect(ctx,bx,by,bw,bh,box.width/30,true,false);
-  fs = 60*devicePixelRatio;
+  fs = 30*devicePixelRatio;
   ctx.font = fs+"px DaysOne";
   while(ctx.measureText(box.number+'  ').width > (box.width)){
     fs--;

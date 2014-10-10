@@ -23,7 +23,7 @@ var app = {
           window.canvasDraw.preRenderBoxes();
           window.now = 0;
           window.then = Date.now();
-          requestAnimFrame(animloop);
+          //requestAnimFrame(animloop);
           //if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide();
         },false);
         window.addEventListener('resize', function(event){
@@ -33,8 +33,8 @@ var app = {
               window.canvasDraw.setUpUIAR();
               window.lManager.board.redoBoxSize();
               window.canvasDraw.drawBGinit(window.lManager.board);
-              window.canvasDraw.preRenderBoxes();
-              requestAnimFrame(animloop);
+              //window.canvasDraw.preRenderBoxes();
+              //requestAnimFrame(animloop);
             },200);
         });
       },
