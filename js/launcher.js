@@ -32,6 +32,7 @@ var app = {
               window.canvasDraw.setUpUIAR();
               window.lManager.board.redoBoxSize();
               window.canvasDraw.drawBGinit(window.lManager.board);
+              requestAnimFrame(animloop);
             },200);
         });
       },

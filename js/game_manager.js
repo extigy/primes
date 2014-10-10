@@ -141,7 +141,7 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
 
       if(mousePos.y > divCoords.top+0.6*divCoords.vheight && mousePos.y < divCoords.top+0.8*divCoords.vheight){
         this.inGame = 1;
-        this.psmooth = numbers.twentythreesmooth;
+        this.psmooth = numbers.seventeensmooth;
         this.boardsize = 7;
         this.restart();
       }

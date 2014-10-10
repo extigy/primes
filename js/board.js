@@ -288,6 +288,6 @@ Board.prototype.totalScore= function () {
   }
   score = Math.ceil(Math.log(score) / Math.LN10);
   //return Math.max(5-score,0);
-  score = Math.max(5 - score/2,0);
+  score = Math.max(5 - score/(2*(this.sizex^2/25)),0);
   return score;
 }

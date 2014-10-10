@@ -4,11 +4,15 @@ function ColorManager() {
 
 ColorManager.prototype.numberHue = function (x,fcs){
   //mix colours using prime factorisation
-  var cc = (numbers.npn[fcs[0]])*this.grc;
+  var nn = numbers.npn[fcs[0]];
+  if(fcs[0]>12)nn=nn+2;
+  var cc = (nn)*this.grc;
   var mhue = cc%1;
-  
+
   for (var i=1;i<fcs.length;i++){
-    cc = (numbers.npn[fcs[i]])*this.grc;
+    nn = numbers.npn[fcs[i]];
+    if(fcs[0]>12)nn=nn+2;
+    cc = (nn)*this.grc;
     cc %= 1;
     mhue = (mhue+cc)/2;
   }
