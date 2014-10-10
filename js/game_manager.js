@@ -152,7 +152,7 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
 
 
 window.animloop = function () {
-  var interval = 1000/60;
+  var interval = 1000/40;
   now = Date.now();
   delta = now - then;
   //console.log("updating");
@@ -163,7 +163,7 @@ window.animloop = function () {
       //console.log("animating");
       //console.log(canvasDraw.animManager.animFinished())
       if(!canvasDraw.animManager.ready || !canvasDraw.animManager.animFinished()){
-        setTimeout(requestAnimFrame(animloop),1000/60);
+        setTimeout(requestAnimFrame(animloop),1000/40);
       }
     }
   }
@@ -173,6 +173,6 @@ window.requestAnimFrame = (function(){
           window.webkitRequestAnimationFramez ||
           window.mozRequestAnimationFramez    ||
           function( callback ){
-            window.setTimeout(callback, 1000 /60);
+            window.setTimeout(callback, 1000 /40);
           };
 })();
