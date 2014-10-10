@@ -17,9 +17,10 @@ var app = {
     bindEvents: function() {
         window.addEventListener('deviceready', this.onDeviceReady, false);
         window.addEventListener('load', function(event){
-          window.canvasDraw = new CanvasDrawer();
           window.cManager = new ColorManager();
+          window.canvasDraw = new CanvasDrawer();
           window.lManager = new GameManager(4);
+          window.canvasDraw.preRenderBoxes();
           window.now = 0;
           window.then = Date.now();
           requestAnimFrame(animloop);
@@ -32,6 +33,7 @@ var app = {
               window.canvasDraw.setUpUIAR();
               window.lManager.board.redoBoxSize();
               window.canvasDraw.drawBGinit(window.lManager.board);
+              window.canvasDraw.preRenderBoxes();
               requestAnimFrame(animloop);
             },200);
         });

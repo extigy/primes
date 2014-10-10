@@ -9,6 +9,8 @@ function CanvasDrawer() {
   this.ctx = this.canvas.getContext('2d');
   this.bgctx = this.bgcanvas.getContext('2d');
   this.setUpUIAR();
+  this.preRender = {};
+  this.preRenderctx = {};
 }
 
 CanvasDrawer.prototype.prepareCanvas = function(dcanvas) {
@@ -27,6 +29,24 @@ CanvasDrawer.prototype.setUpUIAR = function() {
            vwidth:this.canvas.offsetWidth,vheight:this.canvas.offsetWidth,
            bl: this.canvas.width/44,
            br: this.canvas.height/44}
+}
+
+CanvasDrawer.prototype.preRenderBoxes = function() {
+  var tbox;
+  bs = window.lManager.board.boxwidth;
+  for(var i=0;i<numbers.twentythreesmooth.length;i++){
+
+    this.preRender[numbers.twentythreesmooth[i]] = document.createElement('canvas');
+    this.preRender[numbers.twentythreesmooth[i]].width = bs;
+    this.preRender[numbers.twentythreesmooth[i]].height = bs;
+    this.preRenderctx[numbers.twentythreesmooth[i]]=this.preRender[numbers.twentythreesmooth[i]].getContext('2d');
+
+    tbox = new Box(0,0,bs);
+    tbox.number = numbers.twentythreesmooth[i];
+    tbox.type = 'number';
+    tbox.doColor();
+    this.drawPreBox(this.preRenderctx[numbers.twentythreesmooth[i]],tbox);
+  }
 }
 
 
@@ -50,13 +70,15 @@ CanvasDrawer.prototype.draw = function (board) {
   //Animations underneath so need to be drawn first
   for (i = 0;i<board.sizex;i++) {
     for (j = 0;j<board.sizex;j++) {
-      if(board.boxes[i][j].inAnim == 1)this.drawBox(this.ctx,board.boxes[i][j]);
+      if(board.boxes[i][j].inAnim == 1)this.redrawPreBox(this.ctx,board.boxes[i][j]);
+      //if(board.boxes[i][j].inAnim == 1)this.drawBox(this.ctx,board.boxes[i][j]);
     }
   }
 
   for (i = 0;i<board.sizex;i++) {
     for (j = 0;j<board.sizex;j++) {
-      if(board.boxes[i][j].inAnim == 0)this.drawBox(this.ctx,board.boxes[i][j]);
+      if(board.boxes[i][j].inAnim == 0)this.redrawPreBox(this.ctx,board.boxes[i][j]);
+      //if(board.boxes[i][j].inAnim == 0)this.drawBox(this.ctx,board.boxes[i][j]);
     }
   }
 
@@ -150,6 +172,40 @@ CanvasDrawer.prototype.drawMainMenu = function () {
   this.ctx.textAlign = "left";
 };
 
+CanvasDrawer.prototype.drawPreBox = function (ctx,box) {
+  borderSc = 3*box.width/100;
+  bx = 0;
+  by = 0;
+  bw = box.width;
+  bh = box.width;
+  ctx.fillStyle = box.color;
+  this.roundRect(ctx,bx,by,bw,bh,box.width/30,true,false);
+  fs = 60*devicePixelRatio;
+  ctx.font = fs+"px DaysOne";
+  while(ctx.measureText(box.number+'  ').width > (box.width-borderSc*2)){
+    fs--;
+    ctx.font = fs+"px DaysOne";
+  }
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  this.ctx.shadowBlur = 10;
+  this.ctx.shadowColor = "#333333";
+  ctx.fillText(box.number, bx+bw/2, (by+bh)-(bh-ctx.measureText('E').width+1)/2);
+  this.ctx.shadowBlur = 0;
+  ctx.textAlign = "left";
+};
+
+CanvasDrawer.prototype.redrawPreBox = function (ctx,box) {
+  if(box.type != "number")return;
+  borderSc = 3*box.width/100;
+  bx = (box.x*box.width)+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2 + box.shiftx*box.width;
+  by = box.y*box.width+borderSc + divCoords.bl - ((box.scale-1)*box.width)/2 + box.shifty*box.width;
+  bw = box.scale*box.width-borderSc*2;
+  bh = box.scale*box.width-borderSc*2;
+
+  ctx.drawImage(this.preRender[box.number],bx, by, bw, bh);
+};
+
 CanvasDrawer.prototype.drawBox = function (ctx,box) {
   if(box.type != "number")return;
   borderSc = 3*box.width/100;
@@ -160,15 +216,11 @@ CanvasDrawer.prototype.drawBox = function (ctx,box) {
 
   ctx.fillStyle = box.color;
   this.roundRect(ctx,bx,by,bw,bh,box.width/30,true,false);
-  ctx.font = box.fontsize*box.scale+"px DaysOne";
-  if(box.fontsize == 0){
-    fs = 60*devicePixelRatio;
+  fs = 60*devicePixelRatio;
+  ctx.font = fs+"px DaysOne";
+  while(ctx.measureText(box.number+'  ').width > (box.width)){
+    fs--;
     ctx.font = fs+"px DaysOne";
-    while(ctx.measureText(box.number+'  ').width > (box.width-borderSc*2)){
-      fs--;
-      ctx.font = fs+"px DaysOne";
-    }
-    box.fontsize = fs;
   }
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";

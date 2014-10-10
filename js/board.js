@@ -7,7 +7,6 @@ function Box(px,py,bwidth) {
   this.number           = 1;
   this.color            = 0;
   this.delMark          = 0;
-  this.fontsize         = 0;
   this.shiftx           = 0;
   this.shifty           = 0;
   this.nextno           = 0;
@@ -19,7 +18,6 @@ Box.prototype.doColor = function() {
   this.color = cManager.HSV2RGB(cManager.numberHue(this.number,fcs),
                             0.95-0.7*tanh((fcs.length-1)/2),
                             0.95-0.5*tanh((fcs.length-1)/2));
-  this.fontsize = 0;
 }
 
 
@@ -34,7 +32,6 @@ Board.prototype.redoBoxSize = function () {
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizex; y++) {
       this.boxes[x][y].width = this.boxwidth;
-      this.boxes[x][y].fontsize = 0;
     }
   }
 };
