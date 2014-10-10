@@ -34,7 +34,7 @@ var app = {
               window.lManager.board.redoBoxSize();
               window.canvasDraw.drawBGinit(window.lManager.board);
               //window.canvasDraw.preRenderBoxes();
-              //requestAnimFrame(animloop);
+              requestAnimFrame(animloop);
             },200);
         });
       },
