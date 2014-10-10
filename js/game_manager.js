@@ -161,7 +161,7 @@ window.animloop = function () {
         window.lManager.update();
     } else {
       if(!canvasDraw.animManager.animFinished()){
-        setTimeout(requestAnimFrame(animloop),1000/5);
+        setTimeout(requestAnimFrame(animloop),1000/60);
       }
     }
   }
