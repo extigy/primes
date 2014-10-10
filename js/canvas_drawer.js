@@ -34,6 +34,10 @@ CanvasDrawer.prototype.setUpUIAR = function() {
 CanvasDrawer.prototype.preRenderBoxes = function() {
   var tbox;
   bs = window.lManager.board.boxwidth;
+  this.ctx.fillStyle = "#ffffff";
+  this.ctx.textAlign = "center";
+  this.ctx.shadowBlur = 10;
+  this.ctx.shadowColor = "#333333";
   for(var i=0;i<numbers.twentythreesmooth.length;i++){
 
     this.preRender[numbers.twentythreesmooth[i]] = document.createElement('canvas');
@@ -46,6 +50,9 @@ CanvasDrawer.prototype.preRenderBoxes = function() {
     tbox.type = 'number';
     tbox.doColor();
     this.drawPreBox(this.preRenderctx[numbers.twentythreesmooth[i]],tbox);
+
+    this.ctx.fillText("Pre rendering boxes ("+i+"/"+numbers.twentythreesmooth.length+")", divCoords.width/2,divCoords.height/2);
+
   }
 }
 
