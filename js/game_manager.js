@@ -155,12 +155,14 @@ window.animloop = function () {
   var interval = 1000/60;
   now = Date.now();
   delta = now - then;
-  console.log("updating");
+  //console.log("updating");
   if (delta > interval) {
         then = now - (delta % interval);
         window.lManager.update();
     } else {
-      if(!canvasDraw.animManager.animFinished()){
+      //console.log("animating");
+      //console.log(canvasDraw.animManager.animFinished())
+      if(!canvasDraw.animManager.ready || !canvasDraw.animManager.animFinished()){
         setTimeout(requestAnimFrame(animloop),1000/60);
       }
     }

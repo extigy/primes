@@ -1,6 +1,7 @@
 function AnimationManager() {
   this.animStack = new Array();
   this.callbackStack = new Array();
+  this.ready = 0;
 }
 
 AnimationManager.prototype.clear = function() {
@@ -9,6 +10,7 @@ AnimationManager.prototype.clear = function() {
 }
 
 AnimationManager.prototype.doAnimFrames = function() {
+  this.ready = 1;
   requestAnimFrame(animloop);
   for(var i=0;i<this.animStack.length;i++){
     curAnim = this.animStack[i];

@@ -22,7 +22,7 @@ var app = {
           window.lManager = new GameManager(4);
           window.now = 0;
           window.then = Date.now();
-          window.animloop();
+          requestAnimFrame(animloop);
           //if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide();
         },false);
         window.addEventListener('resize', function(event){
