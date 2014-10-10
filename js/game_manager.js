@@ -103,7 +103,7 @@ GameManager.prototype.canMove = function(){
 }
 
 GameManager.prototype.handleEvent = function (mousePos,event) {
-  requestAnimFrame(animloop);
+  if(lManager.inputManager.locked == 0)requestAnimFrame(animloop);
   //touch inside gamearea
   if(this.gameover == 0 && this.inGame == 1 && mousePos.x > (divCoords.left) && mousePos.x < (divCoords.left+divCoords.vwidth) && mousePos.y > divCoords.top && mousePos.y < (divCoords.top+divCoords.vheight)){
     mousePos = {x:mousePos.x - divCoords.left,y:mousePos.y-divCoords.top};
