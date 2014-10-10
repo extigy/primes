@@ -9,8 +9,9 @@ AnimationManager.prototype.clear = function() {
 }
 
 AnimationManager.prototype.doAnimFrames = function() {
+  requestAnimFrame(animloop);
   for(var i=0;i<this.animStack.length;i++){
-    curAnim = this.animStack[i];  
+    curAnim = this.animStack[i];
     switch(curAnim.type){
       case "boxpop":
         if(this.animBoxPop(curAnim.animData)){
@@ -33,7 +34,7 @@ AnimationManager.prototype.doAnimFrames = function() {
           this.callbackStack.splice(i, 1);
         }
         break;
-      } 
+      }
   }
 }
 
@@ -72,8 +73,8 @@ AnimationManager.prototype.animBoxPop = function(animData) {
     if (animData.boxInfo.type == "number"){
       animData.boxInfo.scale = animData.popSizes.pop();
     } else {
-      animData.boxInfo.scale = 0;  
-    } 
+      animData.boxInfo.scale = 0;
+    }
     return (0);
   } else {
     return(1);
@@ -86,7 +87,7 @@ AnimationManager.prototype.animBoxPull = function(animData) {
     animData.boxInfo.type = "number";
     switch(animData.dir){
       case "left":
-        animData.boxInfo.shiftx = -dropShift;   
+        animData.boxInfo.shiftx = -dropShift;
         break;
       case "right":
         animData.boxInfo.shiftx = dropShift;
@@ -127,7 +128,7 @@ AnimationManager.prototype.animBoxDrop = function(animData) {
         }
     } else {
       animData.boxInfo.shifty = 0;
-    } 
+    }
     animData.boxInfo.inAnim = 1;
     return (0);
   } else {

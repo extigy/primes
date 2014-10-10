@@ -77,9 +77,7 @@ GameManager.prototype.handleTouch = function (mousePos) {
         this.gameover = 1;
       }
     }
-
   }
-
 }
 
 GameManager.prototype.canMove = function(){
@@ -105,7 +103,7 @@ GameManager.prototype.canMove = function(){
 }
 
 GameManager.prototype.handleEvent = function (mousePos,event) {
-
+  requestAnimFrame(animloop);
   //touch inside gamearea
   if(this.gameover == 0 && this.inGame == 1 && mousePos.x > (divCoords.left) && mousePos.x < (divCoords.left+divCoords.vwidth) && mousePos.y > divCoords.top && mousePos.y < (divCoords.top+divCoords.vheight)){
     mousePos = {x:mousePos.x - divCoords.left,y:mousePos.y-divCoords.top};
@@ -153,11 +151,26 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
 };
 
 
+window.animloop = function () {
+  var interval = 1000/60;
+  now = Date.now();
+  delta = now - then;
+  console.log("updating");
+  if (delta > interval) {
+        then = now - (delta % interval);
+        window.lManager.update();
+    } else {
+      if(!canvasDraw.animManager.animFinished()){
+        setTimeout(requestAnimFrame(animloop),1000/5);
+      }
+    }
+  }
+
 window.requestAnimFrame = (function(){
   return  window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame    ||
           function( callback ){
-            window.setTimeout(callback, 1000 /60);
+            window.setTimeout(callback, 1000 /30);
           };
 })();

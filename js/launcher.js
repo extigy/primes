@@ -20,7 +20,9 @@ var app = {
           window.canvasDraw = new CanvasDrawer();
           window.cManager = new ColorManager();
           window.lManager = new GameManager(4);
-          (function animloop(){requestAnimFrame(animloop);window.lManager.update();})();
+          window.now = 0;
+          window.then = Date.now();
+          window.animloop();
           //if(typeof(navigator.splashscreen)!='undefined') navigator.splashscreen.hide();
         },false);
         window.addEventListener('resize', function(event){
