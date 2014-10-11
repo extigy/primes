@@ -47,6 +47,22 @@ Board.prototype.makeBoxes = function () {
   return boxes;
 };
 
+Board.prototype.addRandomBox = function(psmooth,wx){
+  nboxes = [];
+  for(n=0;n<wx;n++){
+    //for(m=0;m<wx;m++){
+      if(this.boxes[n][0].type == "empty")nboxes.push(this.boxes[n][0]);
+    //}
+  }
+  i=Math.floor(Math.random()*nboxes.length);
+  nboxes[i].type = "number";
+  nboxes[i].inAnim = 0;
+  nboxes[i].number = psmooth[Math.floor(Math.random()*psmooth.length)];
+  nboxes[i].doColor();
+  this.checkDoubles();
+}
+
+
 Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
   for (i=sx;i<sx+wx;i++){
     for(j=sy;j<sy+wy;j++){
