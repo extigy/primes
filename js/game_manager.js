@@ -60,9 +60,6 @@ GameManager.prototype.handleTouch = function (mousePos) {
         //we can expand into an empty block
         geb = emptyN[Math.floor(Math.random()*emptyN.length)];
         this.board.animatePull(this.board.boxes[geb.x][geb.y],this.board.boxes[bx][by],split[0],split[1],this.board.boxes[geb.x][geb.y].rel,1);
-        if(this.touchcounter++%10 == 9){
-          this.board.addRandomBox(this.psmooth,this.boardsize);
-        }
       } else {
         //ok we're gonna have to push a block out.
         possDirs = this.board.getPushableNeighbors(this.board.boxes[bx][by]);
@@ -70,9 +67,6 @@ GameManager.prototype.handleTouch = function (mousePos) {
         //we can push into an empty block
           gdir = possDirs[Math.floor(Math.random()*possDirs.length)];
           this.board.pushBoxes(this.board.boxes[bx][by],gdir,split[0],split[1]);
-          if(this.touchcounter++%10 == 9){
-            this.board.addRandomBox(this.psmooth,this.boardsize);
-          }
         } else {
           //can't do anything :(
         }
