@@ -293,14 +293,13 @@ Board.prototype.removeMarkedforDel= function () {
 
 
 Board.prototype.totalScore= function () {
-  var score = 1;
+  var score = 0;
   for (x = 0; x < this.sizex; x++) {
     for (y = 0; y < this.sizex; y++) {
-        if(this.boxes[x][y].number>0 && this.boxes[x][y].type=="number") score *= this.boxes[x][y].number;
+        if(this.boxes[x][y].number>0 && this.boxes[x][y].type=="number") score++;
     }
   }
-  score = Math.ceil(Math.log(score) / Math.LN10);
-  //return Math.max(5-score,0);
-  score = Math.max(5 - score/(2*(this.sizex^1.5/11.2)),0);
+   //return Math.max(5-score,0);
+  score = Math.min(5*Math.exp(-Math.pow(score,3)/(Math.pow(5,this.sizex-2)*4)) ,5);
   return score;
 }
