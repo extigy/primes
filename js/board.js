@@ -300,6 +300,6 @@ Board.prototype.totalScore= function () {
     }
   }
    //return Math.max(5-score,0);
-  score = Math.min(5*Math.exp(-Math.pow(score,3)/(Math.pow(5,this.sizex-2)*4)) ,5);
+  score = Math.min(5*Math.exp(-Math.pow(score,3)/(Math.pow(6,this.sizex-2)*4)) ,5);
   return score;
 }
