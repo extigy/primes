@@ -10,7 +10,7 @@ InputManager.prototype.listen = function () {
   document.getElementById('canvas-container').addEventListener("click", function (event) {
     if(lManager.inputManager.locked) return;
     var mousePos = {'x': event.pageX, 'y': event.pageY};
-    s.eventfunc(mousePos,"touchstart");
+    if(!isMobile.any())s.eventfunc(mousePos,"touchstart");
     event.preventDefault();
     event.stopPropagation();
   });
