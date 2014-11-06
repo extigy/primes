@@ -72,7 +72,45 @@ Board.prototype.makeRandomNumbers = function(psmooth,sx,sy,wx,wy) {
       this.boxes[i][j].doColor();
     }
   }
+  this.checkforSinglets();
   this.checkDoubles();
+}
+
+Board.prototype.getSmallestBox = function () {
+  smallest = 5000;
+  smallestbox = this.boxes[0][0];
+  for (x = 0; x < this.sizex; x++) {
+    for (y = 0; y < this.sizex; y++) {
+      if(this.boxes[x][y].number < smallest){
+        smallestbox = this.boxes[x][y];
+        smallest = this.boxes[x][y].number;
+      }
+    }
+  }
+  return smallestbox;
+}
+
+Board.prototype.checkforSinglets = function() {
+  counter = [];
+  for (x = 0; x < this.sizex; x++) {
+    for (y = 0; y < this.sizex; y++) {
+      if(this.boxes[x][y].number >1){
+        nfs = factor(this.boxes[x][y].number);
+        for (i = 0;i<nfs.length;i++){
+          if(counter[nfs[i]]==undefined)counter[nfs[i]] = 0;
+          counter[nfs[i]] +=  1;
+        }
+      }
+    }
+  }
+  //console.log(counter)
+  for (i = 0; i < counter.length; i++) {
+    if( counter[i]%2 == 1){
+      //console.log("added a " + i);
+      smb = this.getSmallestBox();
+      smb.number = smb.number * i;
+    }
+  }
 }
 
 Board.prototype.isInside = function (loc) {
