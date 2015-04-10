@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, minimal-ui, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, target-densitydpi=device-dpi" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta property="og:title" content="Primes!"/>
+<meta property="og:site_name" content="Primes! game"/>
+<meta property="og:description" content="Tap the tiles to pop out the lowest prime factor. Adjacent primes disappear! Addictive numbers game!"/>
+
+<link rel="shortcut icon" href="assets/favicon.ico">
+<link rel="icon" type="image/png" href="assets/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="assets/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="assets/favicon-32x32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/webapp.png">
+<link href='main.css' media="screen" rel='stylesheet' type='text/css'>
+
+<title>Primes!</title>
+</head>
+<body>
+  <div id="title-container">
+    <h1>Primes!</h1>
+    <p>Tap the tiles to pop out the lowest prime factor. Adjacent primes disappear! Try to clear the board.</p>
+  </div>
+  <div id="canvas-container">
+    <canvas class="game-canvas" id="fg-canvas"></canvas>
+  </div>
+  <div id="footer-container">
+    <p>Inspired by little number games such as <a href="http://gabrielecirulli.github.io/2048/">2048</a>. Thanks DC, TF & HM.</p>
+  </div>
+  <div class="app">
+    <div id="deviceready"></div>
+  </div>
+  <script src="js/numbers.js"></script>
+  <script src="js/anim.js"></script>
+  <script src="js/canvas_drawer.js"></script>
+  <script src="js/color_manager.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/input_manager.js"></script>
+  <script src="cordova.js"></script>
+  <script src="js/ad_manager.js"></script>
+  <script src="js/game_manager_five.js"></script>
+  <script src="js/launcher.js"></script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-55076685-3', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <script>
+    app.initialize();
+  </script>
+
+</body>
+</html>
