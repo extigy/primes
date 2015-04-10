@@ -129,19 +129,19 @@ GameManager.prototype.handleEvent = function (mousePos,event) {
       if (mousePos.y > divCoords.top+0.2*divCoords.vheight && mousePos.y < divCoords.top+0.4*divCoords.vheight){
         this.inGame = 1;
         this.boardsize = 5;
-        this.psmooth = numbers.fivesmooth;
+        this.psmooth = numbers.sevensmooth;
         this.restart();
       }
       if(mousePos.y > divCoords.top+0.4*divCoords.vheight && mousePos.y < divCoords.top+0.6*divCoords.vheight){
         this.inGame = 1;
         this.boardsize = 5;
-        this.psmooth = numbers.fivesmooth;
+        this.psmooth = numbers.sevensmooth;
         this.restart();
       }
 
       if(mousePos.y > divCoords.top+0.6*divCoords.vheight && mousePos.y < divCoords.top+0.8*divCoords.vheight){
         this.inGame = 1;
-        this.psmooth = numbers.fivesmooth;
+        this.psmooth = numbers.sevensmooth;
         this.boardsize = 7;
         this.restart();
       }
